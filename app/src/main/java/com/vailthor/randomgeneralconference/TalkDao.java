@@ -13,6 +13,18 @@ public interface TalkDao {
     @Query("select * from talk where id = :id")
     Talk getTalkByID(int id);
 
+    @Query("select * from talk where title = :title")
+    Talk getTalkByTitle(String title);
+
+    @Query("select * from talk where author = :author ORDER BY RANDOM() LIMIT 1")
+    Talk getTalkByAuthor(String author);
+
+    @Query("select * from talk where year = :year ORDER BY RANDOM() LIMIT 1")
+    Talk getTalkByYear(int year);
+
+    @Query("select * from talk where month = :month ORDER BY RANDOM() LIMIT 1")
+    Talk getTalkbyMonth(int month);
+
     @Insert
     void insert(Talk talk);
 
