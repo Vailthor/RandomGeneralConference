@@ -2,4 +2,6 @@
     <string name="app_name">Random General Conference</string>
     <string name="action_settings">Settings</string>
     <string name="title">Talk Title</string>
+    <string name="talk">Current Talk:</string>
+    <string name="noTalk">No Current Talk</string>
 </resources>

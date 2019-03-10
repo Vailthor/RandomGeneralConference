@@ -32,8 +32,11 @@ public class DatabaseInitializer {
             InputStream is = assetManager.open("talks.csv");
             reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             String text = null;
-
+            int count = 1;
             while ((text = reader.readLine()) != null) {
+                if (count % 100 == 0)
+                    Log.d(TAG, "Adding talk" + count);
+                count++;
                 String[] tArr = text.split(",");
                 tArr[0] = tArr[0].replace('+', ',');
                 boolean report = false;
