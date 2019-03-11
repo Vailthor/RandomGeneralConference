@@ -41,6 +41,14 @@ public class MainActivity extends AppCompatActivity {
     private Talk currentTalk;
     final int CURRENT_YEAR = 2018;
 
+/*
+    todo Get WebView working (has something to do with internet permission)
+    todo insure history is working as intended
+    todo get delete history button working
+    todo make landscape work
+    todo get tags in frequency list
+ */
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
             years.add("" + i);
 
         final Spinner sp1 = findViewById(R.id.yearSpin);
-        ArrayAdapter<String> adp1 = new ArrayAdapter<String>(this,
+        ArrayAdapter<String> adp1 = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, years);
         adp1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sp1.setAdapter(adp1);
@@ -270,6 +278,8 @@ public class MainActivity extends AppCompatActivity {
                         t = db.talkDao().getTalkByAuthorandMonth(author, month, report, historyArray);
                     else if (!author.equals("") && month == 0 && year != 0 && tag.equals(""))
                         t = db.talkDao().getTalkByAuthorandYear(author, year, report, historyArray);
+                    else if (!author.equals("") && month == 0 && year == 0 && !tag.equals(""))
+                        t = db.talkDao().getTalkByAuthorandTag(author, tag, report, historyArray);
                     else if (!author.equals("") && month != 0 && year != 0 && tag.equals(""))
                         t = db.talkDao().getTalkByAuthorandDate(author, year, month, report, historyArray);
                     else if (!author.equals("") && month != 0 && year != 0 && !tag.equals(""))
@@ -304,6 +314,8 @@ public class MainActivity extends AppCompatActivity {
                         t = db.talkDao().getTalkByAuthorandMonth(author, month, report);
                     else if (!author.equals("") && month == 0 && year != 0 && tag.equals(""))
                         t = db.talkDao().getTalkByAuthorandYear(author, year, report);
+                    else if (!author.equals("") && month == 0 && year == 0 && !tag.equals(""))
+                        t = db.talkDao().getTalkByAuthorandTag(author, tag, report);
                     else if (!author.equals("") && month != 0 && year != 0 && tag.equals(""))
                         t = db.talkDao().getTalkByAuthorandDate(author, year, month, report);
                     else if (!author.equals("") && month != 0 && year != 0 && !tag.equals(""))
@@ -337,33 +349,35 @@ public class MainActivity extends AppCompatActivity {
                         historyArray[count++] = id;
 
                     if (!author.equals("") && month == 0 && year == 0 && tag.equals(""))
-                        t = db.talkDao().getTalkByAuthor(author);
+                        t = db.talkDao().getTalkByAuthor(author, historyArray);
                     else if (!author.equals("") && month != 0 && year == 0 && tag.equals(""))
-                        t = db.talkDao().getTalkByAuthorandMonth(author, month);
+                        t = db.talkDao().getTalkByAuthorandMonth(author, month, historyArray);
                     else if (!author.equals("") && month == 0 && year != 0 && tag.equals(""))
-                        t = db.talkDao().getTalkByAuthorandYear(author, year);
+                        t = db.talkDao().getTalkByAuthorandYear(author, year, historyArray);
+                    else if (!author.equals("") && month == 0 && year == 0 && !tag.equals(""))
+                        t = db.talkDao().getTalkByAuthorandTag(author, tag, historyArray);
                     else if (!author.equals("") && month != 0 && year != 0 && tag.equals(""))
-                        t = db.talkDao().getTalkByAuthorandDate(author, year, month);
+                        t = db.talkDao().getTalkByAuthorandDate(author, year, month, historyArray);
                     else if (!author.equals("") && month != 0 && year != 0 && !tag.equals(""))
-                        t = db.talkDao().getWithAllNoChecks(author, year, month, tag);
+                        t = db.talkDao().getWithAllNoChecks(author, year, month, tag, historyArray);
                     else if (!author.equals("") && month == 0 && year != 0 && !tag.equals(""))
-                        t = db.talkDao().getTalkByAuthorYearTag(author, year, tag);
+                        t = db.talkDao().getTalkByAuthorYearTag(author, year, tag, historyArray);
                     else if (!author.equals("") && month != 0 && year == 0 && !tag.equals(""))
-                        t = db.talkDao().getTalkByAuthorMonthTag(author, month, tag);
+                        t = db.talkDao().getTalkByAuthorMonthTag(author, month, tag, historyArray);
                     else if (author.equals("") && month == 0 && year != 0 && tag.equals(""))
-                        t = db.talkDao().getTalkByYear(year);
+                        t = db.talkDao().getTalkByYear(year, historyArray);
                     else if (author.equals("") && month != 0 && year != 0 && tag.equals(""))
-                        t = db.talkDao().getTalkByDate(year, month);
+                        t = db.talkDao().getTalkByDate(year, month, historyArray);
                     else if (author.equals("") && month == 0 && year != 0 && !tag.equals(""))
-                        t = db.talkDao().getTalkByYearandTag(year, tag);
+                        t = db.talkDao().getTalkByYearandTag(year, tag, historyArray);
                     else if (author.equals("") && month != 0 && year != 0 && !tag.equals(""))
-                        t = db.talkDao().getTalkByYearMonthTag(year, month, tag);
+                        t = db.talkDao().getTalkByYearMonthTag(year, month, tag, historyArray);
                     else if (author.equals("") && month != 0 && year == 0 && !tag.equals(""))
-                        t = db.talkDao().getTalkByMonthandTag(month, tag);
+                        t = db.talkDao().getTalkByMonthandTag(month, tag, historyArray);
                     else if (author.equals("") && month != 0 && year == 0 && tag.equals(""))
-                        t = db.talkDao().getTalkByMonth(month);
+                        t = db.talkDao().getTalkByMonth(month, historyArray);
                     else if (author.equals("") && month == 0 && year == 0 && !tag.equals(""))
-                        t = db.talkDao().getTalkByTag(tag);
+                        t = db.talkDao().getTalkByTag(tag, historyArray);
                     else {
                         t = db.talkDao().getRandomTalkHistory(historyArray);
                     }

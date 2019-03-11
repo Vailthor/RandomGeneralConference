@@ -15,9 +15,6 @@ public interface TalkDao {
     @Query("select * from talk where author = :author and year = :year and month = :month and tags like :tag ORDER BY RANDOM() LIMIT 1")
     Talk getWithAllNoChecks(String author, int year, int month, String tag);
 
-    @Query("select * from talk where title like '%'+:title+'%'")
-    Talk getTalkByTitle(String title);
-
     @Query("select * from talk where author = :author ORDER BY RANDOM() LIMIT 1")
     Talk getTalkByAuthor(String author);
 
@@ -210,6 +207,8 @@ public interface TalkDao {
     @Query("select * from talk where tags like :tag and report = :report and id not in (:history) ORDER BY RANDOM() LIMIT 1")
     Talk getTalkByTag(String tag, Boolean report, int[] history);
 
+    @Query("select * from talk where title like '%'+:title+'%'")
+    Talk getTalkByTitle(String title);
 
     @Insert
     void insert(Talk talk);
