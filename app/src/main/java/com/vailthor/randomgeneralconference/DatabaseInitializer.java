@@ -1,6 +1,7 @@
 package com.vailthor.randomgeneralconference;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -17,11 +18,13 @@ import java.io.InputStreamReader;
 
 
 public class DatabaseInitializer {
+    final static String PREFS_NAME = "MyPrefsFile";
     private static final String TAG = "DBInitialize";
-    public static void populateAsync(final AppDatabase db, Context context) {
+    public static boolean populateAsync(final AppDatabase db, Context context) {
 
         PopulateDbAsync task = new PopulateDbAsync(db, context);
         task.execute();
+        return true;
     }
 
     private static void populateWithData(AppDatabase db, Context ct) {
@@ -60,6 +63,8 @@ public class DatabaseInitializer {
 
         }
         Log.d(TAG, "Done Populating");
+        SharedPreferences settings = ct.getSharedPreferences(PREFS_NAME, 0);
+        settings.edit().putBoolean("first_time", false).apply();
     }
 
 

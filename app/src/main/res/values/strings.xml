@@ -4,4 +4,8 @@
     <string name="title">Talk Title</string>
     <string name="talk">Current Talk:</string>
     <string name="noTalk">No Current Talk</string>
+    <string name="report">Reports and Sustainings\n\nWhen on Reports and Sustainings will not be selected</string>
+    <string name="history">History\n\nWhen on only talks that have not been read will be selected</string>
+    <string name="inApp">Read in App\n\nWhen on Talks will be opened in the App as opposed to Gospel Library or a Browser</string>
+    <string name="delHistory">Delete History</string>
 </resources>
