@@ -1,12 +1,15 @@
 package com.vailthor.randomgeneralconference;
 
 import android.arch.persistence.room.Room;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.util.ArraySet;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -15,13 +18,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private AppDatabase db;
     //Max history size 500
     ArrayList<Integer> history;
+    ArrayList<String> historyTitles;
     private static final String TAG = "MyActivity";
     final String PREFS_NAME = "MyPrefsFile";
     AutoCompleteTextView authorsView;
@@ -43,9 +56,10 @@ public class MainActivity extends AppCompatActivity {
     final int CURRENT_YEAR = 2018;
 
 /*
-    todo Get WebView working (has something to do with internet permission)
-    todo insure history is working as intended
-    todo get delete history button working
+
+    todo fix authors that only give statical reports
+    todo make sure user can't mess up database creation
+    todo fix smaller screen layout
     todo make landscape work
  */
 
@@ -54,25 +68,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        TextView talkV = findViewById(R.id.talkText);
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "talks_db").build();
         history = new ArrayList<>();
+        historyTitles = new ArrayList<>();
 
 
-        if (settings.getBoolean("first_time", true)) {
-            boolean done = DatabaseInitializer.populateAsync(db, getApplicationContext());
-            settings.edit().putBoolean("history", true).apply();
-            settings.edit().putBoolean("report", true).apply();
-            settings.edit().putBoolean("read", false).apply();
-            settings.edit().putBoolean("first_time", false).apply();
-            history.add(-1);
-            //talkV.setText("Creating Database Please Wait");
-            //checkIni(done);
-        }
-        else
-        {
-            history = getSavedHistory();
-        }
+
+        String histString = history.toString();
+        Log.d(TAG, "History " + histString);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -111,6 +114,23 @@ public class MainActivity extends AppCompatActivity {
         fabGen.setOnClickListener(generate);
         fabGo.setOnClickListener(goToTalk);
         Log.d(TAG, "Testing");
+
+
+        if (settings.getBoolean("first_time", true)) {
+            initializeDatabase(db, getApplicationContext());
+            settings.edit().putBoolean("history", true).apply();
+            settings.edit().putBoolean("report", true).apply();
+            settings.edit().putBoolean("read", true).apply();
+            settings.edit().putBoolean("first_time", false).apply();
+            history.add(-1);
+            //talkV.setText("Creating Database Please Wait");
+            //checkIni(done);
+        }
+        else
+        {
+            history = getSavedHistory();
+        }
+
     }
 
     private View.OnClickListener generate = new View.OnClickListener() {
@@ -126,12 +146,14 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
             boolean readInApp = settings.getBoolean("read",false);
             if (currentTalk != null && !readInApp) {
+                addTalkToHistory();
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentTalk.getURL()));
                 startActivity(browserIntent);
-                addTalkToHistory();
+
 
             }
             else if (currentTalk != null && readInApp) {
+                addTalkToHistory();
                 Intent intent = new Intent(v.getContext(), TalkView.class);
                 intent.putExtra("URL", currentTalk.getURL());
                 startActivity(intent);
@@ -144,18 +166,17 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void addTalkToHistory() {
-        if (history.get(0) >= 500)
+        if (history.size() >= 100)
             history.remove(history.size()-1);
-        Log.d(TAG, "addTalkToHistory: History #" + history.get(0));
-        history.add(currentTalk.getId());
+        Log.d(TAG, "History so far: " + history);
+        if (!history.contains(currentTalk.getId())) {
+            history.add(currentTalk.getId());
+            historyTitles.add(currentTalk.getTitle());
+        }
+    }
+    protected void streamAudio() {
 
     }
-    /*
-    private static AppDatabase buildDatabase(Context context) {
-        AppDatabase db = Room.databaseBuilder(context, AppDatabase.class, "talks_db").build();
-        DatabaseInitializer.populateAsync(db, context);
-        return db;
-    }*/
 
     public void changeTalk(Talk talk) {
         if (talk != null) {
@@ -174,25 +195,41 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void changeTalk(String change) {
+        TextView talkV = findViewById(R.id.talkText);
+        talkV.setText(change);
+    }
+
     private ArrayList<Integer> getSavedHistory()
     {
         ArrayList<Integer> intHistory = new ArrayList<>();
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        Set<String> history = settings.getStringSet("savedHistory", new HashSet<>(Arrays.asList("-1")));
-        Log.d(TAG, "SavedHistory: " + history);
-        for (String id : history) {
+        Set<String> savedHistory = settings.getStringSet("savedHistory", new ArraySet<>(Arrays.asList("-1")));
+        Set<String> savedHistoryTitles = settings.getStringSet("savedHistoryTitles", new ArraySet<>(Arrays.asList("-1")));
+        //Log.d(TAG, "SavedHistory: " + history);
+        history.clear();
+        historyTitles.clear();
+        for (String id : savedHistory) {
             intHistory.add(Integer.parseInt(id));
         }
+        for (String title : savedHistoryTitles)
+            historyTitles.add(title);
         return intHistory;
     }
 
     private void saveHistory(ArrayList<Integer> history) {
-        HashSet<String> historyToSave = new HashSet<>();
+        ArraySet<String> historyToSave = new ArraySet<>();
         for (int id : history) {
             historyToSave.add(Integer.toString(id));
         }
+        ArraySet<String> historyTitlesToSave = new ArraySet<>();
+        for (String title : historyTitles) {
+            historyTitlesToSave.add(title);
+        }
+
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         settings.edit().putStringSet("savedHistory", historyToSave).apply();
+        settings.edit().putStringSet("savedHistoryTitles", historyTitlesToSave).apply();
     }
 
     @Override
@@ -207,40 +244,56 @@ public class MainActivity extends AppCompatActivity {
         // Handle act on bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        int itemId = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (itemId == R.id.action_settings) {
             Intent intent = new Intent(this, Settings.class);
-            //intent.putExtra(EXTRA_MESSAGE, message);
             startActivity(intent);
             Log.d(TAG, "onOptionsItemSelected: ");
             return true;
         }
 
+        if (itemId == R.id.action_history) {
+            Intent intent = new Intent(this, History.class);
+            Bundle extras = new Bundle();
+            extras.putStringArrayList("talksHistory", historyTitles);
+            intent.putExtras(extras);
+            startActivityForResult(intent, 1);
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
-    /*private void checkIni(final boolean done) {
-        class CheckIni extends AsyncTask<Void,Void,Void> {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult: Maybe Deleting Stuff");
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            ArrayList<Integer> toDelete;
+            if (extras != null) {
+                Log.d(TAG, "onActivityResult: Deleting Stuff");
+                toDelete = extras.getIntegerArrayList("toDelete");
+                if (toDelete.get(0) == -1) {
+                    historyTitles.clear();
+                    history.clear();
 
-            @Override
-            protected Void doInBackground(Void... voids) {
-                while (!done) {
-                    try {
-                        wait(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                }
+                else if (toDelete.size() > 0) {
+                    for (int i : toDelete) {
+                        history.remove(i);
+                        historyTitles.remove(i);
                     }
                 }
-                return null;
-            }
-            @Override
-            protected void onPostExecute(Void) {
-                changeTalk();
+                if (history.size() == 0) {
+                    history.add(-1);
+                    historyTitles.add("-1");
+                }
+                saveHistory(history);
             }
         }
-    }*/
+    }
 
     private void getTalk() {
         class GetTalk extends AsyncTask<Void,Void,Talk> {
@@ -442,6 +495,96 @@ public class MainActivity extends AppCompatActivity {
         }
         GetTalk gt = new GetTalk();
         gt.execute();
+    }
+
+    public void changeProgressVisibility(int vis) {
+        ProgressBar progress = findViewById(R.id.progressBar);
+        if (vis == 0) {
+            progress.setVisibility(View.INVISIBLE);
+        }
+        else {
+            progress.setVisibility(View.VISIBLE);
+            changeTalk("Database Populating");
+        }
+    }
+
+
+    
+    private void initializeDatabase(final AppDatabase database, final Context context) {
+        class PopulateDbAsync extends AsyncTask<Void, Integer, Void> {
+
+            private final AppDatabase mDb = database;
+            private Context ct = context;
+
+            @Override
+            protected void onPreExecute() {
+                changeProgressVisibility(1);
+            }
+            @Override
+            protected Void doInBackground(final Void... params) {
+                //read from csv file
+                AssetManager assetManager = ct.getAssets();
+                BufferedReader reader = null;
+                try {
+                    InputStream is = assetManager.open("talks.csv");
+                    reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                    String text = null;
+                    int count = 1;
+                    while ((text = reader.readLine()) != null) {
+                        publishProgress(count);
+                        if (count % 500 == 0) {
+                            Log.d(TAG, "Adding talk" + count);
+
+                        }
+                        count++;
+                        String[] tArr = text.split(",");
+                        tArr[0] = tArr[0].replace('+', ',');
+                        boolean report = false;
+                        if (tArr[4].equals("T")) {
+                            report = true;
+                        }
+                        Talk t = new Talk(tArr[0], tArr[1], Integer.parseInt(tArr[2]), Integer.parseInt(tArr[3]), report, tArr[5], tArr[6]);
+                        mDb.talkDao().insert(t);
+
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        if (reader != null) {
+                            reader.close();
+                        }
+                    } catch (IOException e) {
+                    }
+
+                }
+                Log.d(TAG, "Done Populating");
+                SharedPreferences settings = ct.getSharedPreferences(PREFS_NAME, 0);
+                settings.edit().putBoolean("first_time", false).apply();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void v) {
+                changeProgressVisibility(0);
+                changeTalk("Done Creating Database");
+
+            }
+
+            @Override
+            protected void onProgressUpdate(Integer... count) {
+                ProgressBar progress = findViewById(R.id.progressBar);
+                int percent = (int)((count[0] / 3771.0) * 100.0);
+
+                progress.setProgress(percent);
+
+            }
+
+        }
+        PopulateDbAsync sync = new PopulateDbAsync();
+        sync.execute();
     }
 
     @Override

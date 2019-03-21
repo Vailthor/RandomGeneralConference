@@ -4,8 +4,11 @@
     <string name="title">Talk Title</string>
     <string name="talk">Current Talk:</string>
     <string name="noTalk">No Current Talk</string>
-    <string name="report">Reports and Sustainings\n\nWhen on Reports and Sustainings will not be selected</string>
-    <string name="history">History\n\nWhen on only talks that have not been read will be selected</string>
-    <string name="inApp">Read in App\n\nWhen on Talks will be opened in the App as opposed to Gospel Library or a Browser</string>
-    <string name="delHistory">Delete History</string>
+    <string name="report">Reports and Sustainings\n\nWhen on, Reports and Sustainings will not be selected</string>
+    <string name="history">History\n\nWhen on, only talks that have not been read will be selected</string>
+    <string name="inApp">Read in App\n\nWhen on, Talks will be opened in the App as opposed to Gospel Library or a Browser</string>
+    <string name="delHistory">Delete\nEntire\nHistory</string>
+    <string name="action_history">History</string>
+    <string name="delete_selected">Delete\nSelected\nTalk</string>
+    <string name="how_to_use">How to Use:\nTo Generate a Completely Random Talk leave all fields blank and click the bottom left button.\nTo go to the selected Talk click the bottom right button</string>
 </resources>

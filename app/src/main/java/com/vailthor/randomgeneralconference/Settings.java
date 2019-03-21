@@ -1,11 +1,16 @@
 package com.vailthor.randomgeneralconference;
 
+
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Settings extends AppCompatActivity {
 
@@ -17,12 +22,15 @@ public class Settings extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         final SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 
+
+
         Switch histSwitch = findViewById(R.id.historySwitch);
         histSwitch.setChecked(settings.getBoolean("history", true));
         Switch reportSwitch = findViewById(R.id.reportsSwitch);
         reportSwitch.setChecked(settings.getBoolean("report", true));
         Switch readSwitch = findViewById(R.id.readInApp);
         readSwitch.setChecked(settings.getBoolean("read", true));
+
 
         histSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -57,5 +65,6 @@ public class Settings extends AppCompatActivity {
                 // true if the switch is in the On position
             }
         });
+
     }
 }
