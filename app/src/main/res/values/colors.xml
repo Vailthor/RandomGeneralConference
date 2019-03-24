@@ -5,4 +5,5 @@
     <color name="colorAccent">#D81B60</color>
     <color name="pressed_color">#4d90fe</color>
     <color name="default_color">#ffffff</color>
+    <color name="see">#04200000</color>
 </resources>

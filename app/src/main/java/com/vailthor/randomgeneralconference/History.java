@@ -20,8 +20,10 @@ public class History extends AppCompatActivity {
 
     int firstNegative;
     int currentPosition;
+    boolean noTalks = false;
     ArrayList<Integer> toDelete;
     ArrayList<String> talksHistory;
+    ArrayList<String> savedHistory;
     private static final String TAG = "History";
 
     @Override
@@ -34,6 +36,7 @@ public class History extends AppCompatActivity {
          talksHistory = new ArrayList<>();
         if (extras != null) {
             talksHistory = extras.getStringArrayList("talksHistory");
+            savedHistory = talksHistory;
             int negPost = talksHistory.indexOf("-1");
             if (negPost >= 0) {
                 talksHistory.remove(negPost);
@@ -42,6 +45,7 @@ public class History extends AppCompatActivity {
             else
                 firstNegative = 0;
         }
+
         final int historySize = talksHistory.size();
         final ListView histList = findViewById(R.id.historyList);
         histList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -52,6 +56,10 @@ public class History extends AppCompatActivity {
             }
 
         });
+        if (historySize == 0 || (historySize == 1 && firstNegative == 1)) {
+            talksHistory.add("(No Talks in History)");
+            noTalks = true;
+        }
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_list_item_1,
@@ -65,21 +73,20 @@ public class History extends AppCompatActivity {
         delHistory.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (toDelete.size() > 0)
-                    toDelete.set(0,-1);
+                    toDelete.set(0, -1);
                 else
                     toDelete.add(-1);
-                if (historySize - firstNegative > 0) {
+                //if (historySize > 0) {
                     talksHistory.clear();
                     arrayAdapter.notifyDataSetChanged();
-                }
-
+                //}
             }
         });
 
         delIndiv.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (currentPosition != -1) {
-                    toDelete.add(currentPosition + firstNegative);
+                    toDelete.add(savedHistory.indexOf(talksHistory.get(currentPosition)));
                     talksHistory.remove(currentPosition);
                     arrayAdapter.notifyDataSetChanged();
                 }
@@ -102,7 +109,7 @@ public class History extends AppCompatActivity {
         Log.d(TAG, "onPause: ");
         Intent intent = new Intent();
         Bundle extras = new Bundle();
-        if (!toDelete.isEmpty()) {
+        if (!toDelete.isEmpty() && !noTalks) {
             extras.putIntegerArrayList("toDelete", toDelete);
             intent.putExtras(extras);
             setResult(RESULT_OK, intent);

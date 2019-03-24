@@ -210,6 +210,9 @@ public interface TalkDao {
     @Query("select * from talk where title like '%'+:title+'%'")
     Talk getTalkByTitle(String title);
 
+    @Query("DELETE FROM Talk")
+    public void nukeTable();
+
     @Insert
     void insert(Talk talk);
 

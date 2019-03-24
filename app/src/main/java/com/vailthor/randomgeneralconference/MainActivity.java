@@ -61,6 +61,12 @@ public class MainActivity extends AppCompatActivity {
     todo make sure user can't mess up database creation
     todo fix smaller screen layout
     todo make landscape work
+
+    Elder, President in author
+Settings - Will exclude
+Say when there is no history
+GO to talk in history
+landscape don't extend text to edge of screen
  */
 
 
@@ -143,23 +149,28 @@ public class MainActivity extends AppCompatActivity {
     private View.OnClickListener goToTalk = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-            boolean readInApp = settings.getBoolean("read",false);
-            if (currentTalk != null && !readInApp) {
-                addTalkToHistory();
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentTalk.getURL()));
-                startActivity(browserIntent);
+            ProgressBar progress = findViewById(R.id.progressBar);
+            if (progress.getVisibility() != View.VISIBLE) {
+                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                boolean readInApp = settings.getBoolean("read", false);
+                if (currentTalk != null && !readInApp) {
+                    addTalkToHistory();
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentTalk.getURL()));
+                    startActivity(browserIntent);
 
 
-            }
-            else if (currentTalk != null && readInApp) {
-                addTalkToHistory();
-                Intent intent = new Intent(v.getContext(), TalkView.class);
-                intent.putExtra("URL", currentTalk.getURL());
-                startActivity(intent);
+                } else if (currentTalk != null && readInApp) {
+                    addTalkToHistory();
+                    Intent intent = new Intent(v.getContext(), TalkView.class);
+                    intent.putExtra("URL", currentTalk.getURL());
+                    startActivity(intent);
+                } else {
+                    Toast toast = Toast.makeText(getApplicationContext(), "No Current Talk", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
             }
             else {
-                Toast toast = Toast.makeText(getApplicationContext(), "No Current Talk", Toast.LENGTH_SHORT);
+                Toast toast = Toast.makeText(getApplicationContext(), "Please Wait till Population is Done", Toast.LENGTH_SHORT);
                 toast.show();
             }
         }
@@ -245,23 +256,28 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int itemId = item.getItemId();
+        ProgressBar progress = findViewById(R.id.progressBar);
+        if (progress.getVisibility() != View.VISIBLE) {
+            //noinspection SimplifiableIfStatement
+            if (itemId == R.id.action_settings) {
+                Intent intent = new Intent(this, Settings.class);
+                startActivity(intent);
+                Log.d(TAG, "onOptionsItemSelected: ");
+                return true;
+            }
 
-        //noinspection SimplifiableIfStatement
-        if (itemId == R.id.action_settings) {
-            Intent intent = new Intent(this, Settings.class);
-            startActivity(intent);
-            Log.d(TAG, "onOptionsItemSelected: ");
-            return true;
+            if (itemId == R.id.action_history) {
+                Intent intent = new Intent(this, History.class);
+                Bundle extras = new Bundle();
+                extras.putStringArrayList("talksHistory", historyTitles);
+                intent.putExtras(extras);
+                startActivityForResult(intent, 1);
+            }
         }
-
-        if (itemId == R.id.action_history) {
-            Intent intent = new Intent(this, History.class);
-            Bundle extras = new Bundle();
-            extras.putStringArrayList("talksHistory", historyTitles);
-            intent.putExtras(extras);
-            startActivityForResult(intent, 1);
+        else {
+            Toast toast = Toast.makeText(getApplicationContext(), "Please Wait till Population is Done", Toast.LENGTH_SHORT);
+            toast.show();
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -569,7 +585,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(Void v) {
                 changeProgressVisibility(0);
-                changeTalk("Done Creating Database");
+                changeTalk("Done Creating Database\n\n" + getString(R.string.how_to_use));
 
             }
 
