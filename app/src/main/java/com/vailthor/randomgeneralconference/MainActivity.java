@@ -34,8 +34,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -58,9 +62,6 @@ public class MainActivity extends AppCompatActivity {
 /*
 
     todo fix authors that only give statical reports
-    todo make sure user can't mess up database creation
-    todo fix smaller screen layout
-    todo make landscape work
 
     Elder, President in author
 Settings - Will exclude
@@ -129,12 +130,32 @@ landscape don't extend text to edge of screen
             settings.edit().putBoolean("read", true).apply();
             settings.edit().putBoolean("first_time", false).apply();
             history.add(-1);
+            Date c = Calendar.getInstance().getTime();
+            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+            String formattedDate = df.format(c);
+            settings.edit().putString("datePopulated", formattedDate).apply();
             //talkV.setText("Creating Database Please Wait");
             //checkIni(done);
         }
         else
         {
             history = getSavedHistory();
+
+            //compare currentDate to add new talks
+            String populationDate = settings.getString("datePopulated", "noDate");
+            Date current = Calendar.getInstance().getTime();
+            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+            Date popDate;
+            try {
+                popDate = df.parse(populationDate);
+                if (popDate.before(current)) {
+                    populateNew();
+                }
+            }
+            catch (ParseException e) {
+            e.printStackTrace();
+            }
+
         }
 
     }
@@ -555,6 +576,7 @@ landscape don't extend text to edge of screen
                         count++;
                         String[] tArr = text.split(",");
                         tArr[0] = tArr[0].replace('+', ',');
+                        tArr[1] = tArr[1].replace('+', ',');
                         boolean report = false;
                         if (tArr[4].equals("T")) {
                             report = true;
@@ -603,6 +625,9 @@ landscape don't extend text to edge of screen
         sync.execute();
     }
 
+    private void populateNew() {
+        //check dates and add talks as needed
+    }
     @Override
     protected void onStop() {
         // call the superclass method first

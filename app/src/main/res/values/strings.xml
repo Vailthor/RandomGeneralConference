@@ -10,5 +10,6 @@
     <string name="delHistory">Delete\nEntire\nHistory</string>
     <string name="action_history">History</string>
     <string name="delete_selected">Delete\nSelected\nTalk</string>
-    <string name="how_to_use">How to Use:\nTo Generate a Completely Random Talk leave all fields blank and click the bottom left button.To go to the selected Talk click the bottom right button. Fill in the fields to filter selectable talk.</string>
+    <string name="how_to_use">How to Use:\nTo Generate a Completely Random Talk leave all fields blank and click the bottom left button. To go to the selected Talk click the bottom right button. Fill in the fields to filter selectable talk.</string>
+    <string name="email">Questions, Comments, or Concerns? Please Email\nvailthor1@gmail.com</string>
 </resources>

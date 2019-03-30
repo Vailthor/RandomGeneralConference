@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="?android:attr/colorControlNormal"
+        app:backgroundTint="?attr/actionMenuTextColor"
         app:maxImageSize="@android:dimen/app_icon_size"
         app:srcCompat="@android:drawable/ic_menu_send" />
 
@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:backgroundTint="@color/see"
+        app:backgroundTint="?attr/actionMenuTextColor"
         app:fabSize="auto"
         app:layout_anchor="@+id/include"
         app:layout_anchorGravity="left|bottom"

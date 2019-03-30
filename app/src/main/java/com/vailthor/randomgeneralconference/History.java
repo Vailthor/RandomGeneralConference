@@ -14,8 +14,6 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-// TODO: 3/20/2019 get back arrow on top bar working correctly
-
 public class History extends AppCompatActivity {
 
     int firstNegative;
