@@ -32,7 +32,6 @@ public class TalkView extends Activity {
         talkView.setWebChromeClient(new WebChromeClient());
         talkView.getSettings().setJavaScriptEnabled(true);
         talkView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
-        Log.d(TAG, "onCreate: " + WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
 
         talkView.loadUrl(URL);
         //getTalkHTML(URL);

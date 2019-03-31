@@ -47,8 +47,6 @@ public class History extends AppCompatActivity {
                     String[] hist = i.split("@");
                     historyTitle.add(hist[0]);
                     if (hist.length > 1) {
-
-                        Log.d(TAG, "onCreate: " + hist[1]);
                         historyID.add(Integer.parseInt(hist[1]));
                     }
                     else
@@ -69,10 +67,6 @@ public class History extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,long arg3) {
                 currentPosition = position;
-                Log.d(TAG, "Position: " + position);
-                Log.d(TAG, "talkName: " + talksHistory.get(currentPosition));
-                Log.d(TAG, "indexOfGivenTalk: " + historyTitle.indexOf(talksHistory.get(currentPosition)));
-                Log.d(TAG, "TalkID: " + historyID.get(historyTitle.indexOf(talksHistory.get(currentPosition))));
                 view.setSelected(true);
             }
 
@@ -175,7 +169,6 @@ public class History extends AppCompatActivity {
     @Override
     public void onBackPressed()
     {
-        Log.d(TAG, "onPause: ");
         Intent intent = new Intent();
         Bundle extras = new Bundle();
         if (!toDelete.isEmpty() && !noTalks) {

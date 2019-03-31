@@ -26,28 +26,20 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -63,16 +55,6 @@ public class MainActivity extends AppCompatActivity {
     private Talk currentTalk;
     final int CURRENT_YEAR = 2018;
 
-/*
-
-    todo fix authors that only give statical reports
-
-    Elder, President in author
-Settings - Will exclude
-Say when there is no history
-GO to talk in history
-landscape don't extend text to edge of screen
- */
 
 
     @Override
@@ -82,11 +64,6 @@ landscape don't extend text to edge of screen
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "talks_db").build();
         history = new LinkedHashMap<>();
-
-
-
-        String histString = history.toString();
-        Log.d(TAG, "History " + histString);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -124,7 +101,6 @@ landscape don't extend text to edge of screen
         FloatingActionButton fabGen = findViewById(R.id.fabGen);
         fabGen.setOnClickListener(generate);
         fabGo.setOnClickListener(goToTalk);
-        Log.d(TAG, "Testing");
 
 
         if (settings.getBoolean("first_time", true)) {
@@ -226,8 +202,6 @@ landscape don't extend text to edge of screen
         if (history.size() >= 201) {
             history.remove(history.size()-1);
         }
-
-        Log.d(TAG, "History so far: " + history);
         if (!history.containsKey(currentTalk.getId())) {
             history.put(currentTalk.getId(), currentTalk.getTitle());
         }
@@ -264,7 +238,6 @@ landscape don't extend text to edge of screen
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 
         Set<String> savedHistory = settings.getStringSet("savedHistory", new ArraySet<>(Arrays.asList("-1")));
-        //Log.d(TAG, "SavedHistory: " + history);
         history.clear();
         if (!savedHistory.contains("-1")) {
             for (String i : savedHistory) {
@@ -307,7 +280,6 @@ landscape don't extend text to edge of screen
             if (itemId == R.id.action_settings) {
                 Intent intent = new Intent(this, Settings.class);
                 startActivity(intent);
-                Log.d(TAG, "onOptionsItemSelected: ");
                 return true;
             }
 
@@ -322,7 +294,6 @@ landscape don't extend text to edge of screen
                 }
                 extras.putStringArrayList("talksHistory", toSendHist);
                 intent.putExtras(extras);
-                Log.d(TAG, "onActivityResult: id: " + history);
                 startActivityForResult(intent, 1);
             }
         }
@@ -335,14 +306,12 @@ landscape don't extend text to edge of screen
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult: Maybe Deleting Stuff");
         super.onActivityResult(requestCode, resultCode, data);
         Bundle extras = data.getExtras();
         if(resultCode == RESULT_OK) {
 
             ArrayList<Integer> toDelete;
             if (extras != null) {
-                Log.d(TAG, "onActivityResult: Deleting Stuff");
                 toDelete = extras.getIntegerArrayList("toDelete");
                 if (toDelete.get(0).equals("-1")) {
                     history.clear();
@@ -350,9 +319,7 @@ landscape don't extend text to edge of screen
                 }
                 else if (toDelete.size() > 0) {
                     for (int i : toDelete) {
-                        Log.d(TAG, "onActivityResult: title:" + history);
                         history.remove(i);
-                        Log.d(TAG, "onActivityResult: title:" + history);
                     }
                 }
                 saveHistory(history);
@@ -360,7 +327,6 @@ landscape don't extend text to edge of screen
         }
         try {
             int idPosition = extras.getInt("id");
-            Log.d(TAG, "onActivityResult: idPosition: " + idPosition);
             if (idPosition > 0) {
                 getTalk(idPosition);
                 //goToTalk();
@@ -406,7 +372,6 @@ landscape don't extend text to edge of screen
 
 
                 Talk t = null;
-                Log.d(TAG, "Fields " + author + " " + tag + " " + year + " " + month);
                 if(historyCheck && reportCheck) {
                     int[] historyArray = new int[history.size()];
                     int count = 0;
@@ -444,7 +409,6 @@ landscape don't extend text to edge of screen
                     else if (author.equals("") && month == 0 && year == 0 && !tag.equals(""))
                         t = db.talkDao().getTalkByTag(tag, report, historyArray);
                     else {
-                        Log.d(TAG, "In getTalk both true");
                         t = db.talkDao().getRandomTalk(report, historyArray);
                     }
                 }
@@ -560,10 +524,6 @@ landscape don't extend text to edge of screen
                         t = db.talkDao().getTalkByID(randNum);
                     }
                 }
-
-                if (t != null)
-                    Log.d(TAG, "Printing talk " + t.getReport());
-
                 return t;
             }
 
@@ -590,7 +550,6 @@ landscape don't extend text to edge of screen
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        Log.d(TAG, "onConfigurationChanged: ");
     }
 
     private void initializeDatabase(final AppDatabase database, final Context context) {
@@ -618,10 +577,6 @@ landscape don't extend text to edge of screen
                     int count = 1;
                     while ((text = reader.readLine()) != null) {
                         publishProgress(count);
-                        if (count % 500 == 0) {
-                            Log.d(TAG, "Adding talk" + count);
-
-                        }
                         count++;
                         String[] tArr = text.split(",");
                         tArr[0] = tArr[0].replace('+', ',');
@@ -647,7 +602,6 @@ landscape don't extend text to edge of screen
                     }
 
                 }
-                Log.d(TAG, "Done Populating");
                 SharedPreferences settings = ct.getSharedPreferences(PREFS_NAME, 0);
                 settings.edit().putBoolean("first_time", false).apply();
                 return null;
