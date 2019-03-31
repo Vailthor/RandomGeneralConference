@@ -4,7 +4,9 @@ import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -39,10 +41,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -50,8 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AppDatabase db;
     //Max history size 500
-    ArrayList<Integer> history;
-    ArrayList<String> historyTitles;
+    LinkedHashMap<Integer, String> history;
     private static final String TAG = "MyActivity";
     final String PREFS_NAME = "MyPrefsFile";
     AutoCompleteTextView authorsView;
@@ -74,16 +78,16 @@ landscape don't extend text to edge of screen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "talks_db").build();
-        history = new ArrayList<>();
-        historyTitles = new ArrayList<>();
+        history = new LinkedHashMap<>();
 
 
 
         String histString = history.toString();
         Log.d(TAG, "History " + histString);
-        setContentView(R.layout.activity_main);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         String authors[] = {"Gordon B. Hinckley","Thomas S. Monson","James E. Faust","Henry B. Eyring","Boyd K. Packer","L. Tom Perry","Russell M. Nelson","M. Russell Ballard","Dallin H. Oaks","Spencer W. Kimball","Dieter F. Uchtdorf","N. Eldon Tanner","Ezra Taft Benson","Marion G. Romney","David B. Haight","Richard G. Scott","Robert D. Hales","Joseph B. Wirthlin","Neal A. Maxwell","Jeffrey R. Holland","Howard W. Hunter","Marvin J. Ashton","Bruce R. McConkie","David A. Bednar","D. Todd Christofferson","Victor L. Brown","Mark E. Petersen","Neil L. Andersen","Quentin L. Cook","F. Michael Watson","LeGrand Richards","Barbara B. Smith","H. Burke Peterson","Wilford G. Edling","Marion D. Hanks","Loren C. Dunn","Vaughn J. Featherstone","A. Theodore Tuttle","Franklin D. Richards","Francis M. Gibbons","Harold B. Lee","Hartman Rector+ Jr.","Elaine S. Dalton","Paul H. Dunn","Rex D. Pinegar","Julie B. Beck","J. Thomas Fyans","Richard C. Edgley","Theodore M. Burton","H. David Burton","Robert L. Simpson","J. Richard Clarke","Ronald A. Rasband","Elaine L. Jack","Joseph Anderson","Bonnie D. Parkin","Charles A. Didier","S. Dilworth Young","Delbert L. Stapley","Dean L. Larsen","Sterling W. Sill","Keith B. McMullin","Henry D. Taylor","Bernard P. Brockbank","Carlos E. Asay","William Grant Bangerter","Adney Y. Komatsu","John H. Vandenberg","James A. Cullimore","Barbara W. Winder","Eldred G. Smith","Gary E. Stevenson","Dwan J. Young","John H. Groberg","Dale G. Renlund","Robert L. Backman","Susan W. Tanner","Joseph Fielding Smith","Ted E. Davis","Brook P. Hales","Ardeth G. Kapp","James M. Paramore","William R. Bradford","Chieko N. Okazaki","O. Leslie Stone","Gene R. Cook","Robert W. Cantwell","Mary N. Cook","Earl C. Tingey","Aileen H. Clyde","Hugh W. Pinnock","Yoshihiko Kikuchi","Glenn L. Pace","ElRay L. Christiansen","Linda K. Burton","Jacob de Jager","Margaret D. Nadauld","F. Burton Howard","Sharon G. Larsen","Silvia H. Allred","Barbara Thompson","Ronald E. Poelman","Ulisses Soares","Virginia U. Jensen","F. Enzio Busche","Anne C. Pingree","Donald L. Hallstrom","William H. Bennett","Sheri L. Dew","L. Whitney Clayton","Virginia H. Pearce","Carol B. Thomas","Kathleen H. Hughes","Robert E. Wells","Jack H. Goaslind","Ann M. Dibb","Bonnie L. Oscarson","Elaine A. Cannon","Mary Ellen Smoot","Harold G. Hillam","Carole M. Stephens","L. Aldin Porter","Ted E. Brewerton","Lynn G. Robbins","Royden G. Derrick","Michaelene P. Grassli","Claudio R. M. Costa","Richard J. Maynes","Angel Abrea","George P. Lee","W. Craig Zwick","Rosemary M. Wixom","Jay E. Jensen","David E. Sorensen","Craig C. Christensen","Kevin R. Jergensen","Steven E. Snow","Merrill J. Bateman","Derek A. Cuthbert","Dennis B. Neuenschwander","Linda S. Reeves","Walter F. González","Tad R. Callister","Gérald Caussé","Monte J. Brough","Joe J. Christensen","Carlos H. Amado","Marlin K. Jensen","Carol F. McConkie","Patricia P. Pinegar","Dean M. Davies","W. Eugene Hansen","Gerrit W. Gong","Janette Hales Beckham","Hans B. Ringger","Alexander B. Morrison","John K. Carmack","Cheryl A. Esplin","Francisco J. Viñas","Ben B. Banks","Cecil O. Samuelson Jr.","Kenneth Johnson","G. Homer Durham","Coleen K. Menlove","Spencer J. Condie","Bruce D. Porter","John B. Dickson","Joanne B. Doxey","Ruth B. Wright","Neill F. Marriott","Janette C. Hales","Wesley L. Jones","L. Lionel Kendrick","Carl B. Pratt","F. Melvin Hammond","Alvin R. Dyer","Paul B. Pieper","Lance B. Wickman","Sheldon F. Child","Cheryl C. Lant","Shayne M. Bowen","Claudio D. Zivic","Benjamín De Hoyos","David F. Evans","Milton R. Hunter","Mervyn B. Arnold","Joy F. Evans","Paul V. Johnson","Gary J. Coleman","C. Scott Grow","W. Christopher Waddell","Robert K. Dellenbach","Gayle M. Clegg","Jean A. Stevens","Jean B. Bingham","William R. Walker","Christoffel Golden Jr.","Shirley W. Thomas","Joy D. Jones","Rex C. Reeve","Devin G. Durrant","Stanley G. Ellis","Lynn A. Mickelsen","Robert C. Oaks","Jayne B. Malan","John M. Madsen","Sydney S. Reynolds","H. Bryan Richards","Lloyd P. George","Carlos A. Godoy","Gardner H. Russell","Michael John U. Teh","Anthony D. Perkins","Lawrence E. Corbridge"};
@@ -124,23 +128,19 @@ landscape don't extend text to edge of screen
 
 
         if (settings.getBoolean("first_time", true)) {
+            Date c = Calendar.getInstance().getTime();
+            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+            String formattedDate = df.format(c);
+            settings.edit().putString("datePopulated", formattedDate).apply();
             initializeDatabase(db, getApplicationContext());
             settings.edit().putBoolean("history", true).apply();
             settings.edit().putBoolean("report", true).apply();
             settings.edit().putBoolean("read", true).apply();
             settings.edit().putBoolean("first_time", false).apply();
-            history.add(-1);
-            Date c = Calendar.getInstance().getTime();
-            SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
-            String formattedDate = df.format(c);
-            settings.edit().putString("datePopulated", formattedDate).apply();
             //talkV.setText("Creating Database Please Wait");
             //checkIni(done);
         }
-        else
-        {
-            history = getSavedHistory();
-
+        else {
             //compare currentDate to add new talks
             String populationDate = settings.getString("datePopulated", "noDate");
             Date current = Calendar.getInstance().getTime();
@@ -153,8 +153,13 @@ landscape don't extend text to edge of screen
                 }
             }
             catch (ParseException e) {
-            e.printStackTrace();
+                e.printStackTrace();
             }
+
+            getSavedHistory();
+
+
+
 
         }
 
@@ -163,7 +168,7 @@ landscape don't extend text to edge of screen
     private View.OnClickListener generate = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            getTalk();
+            getTalk(-1);
         }
     };
 
@@ -197,13 +202,34 @@ landscape don't extend text to edge of screen
         }
     };
 
+    private void goToTalk() {
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        boolean readInApp = settings.getBoolean("read", false);
+        if (currentTalk != null && !readInApp) {
+            addTalkToHistory();
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentTalk.getURL()));
+            startActivity(browserIntent);
+
+
+        } else if (currentTalk != null && readInApp) {
+            addTalkToHistory();
+            Intent intent = new Intent(getApplicationContext(), TalkView.class);
+            intent.putExtra("URL", currentTalk.getURL());
+            startActivity(intent);
+        } else {
+            Toast toast = Toast.makeText(getApplicationContext(), "No Current Talk", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+
     private void addTalkToHistory() {
-        if (history.size() >= 100)
+        if (history.size() >= 201) {
             history.remove(history.size()-1);
+        }
+
         Log.d(TAG, "History so far: " + history);
-        if (!history.contains(currentTalk.getId())) {
-            history.add(currentTalk.getId());
-            historyTitles.add(currentTalk.getTitle());
+        if (!history.containsKey(currentTalk.getId())) {
+            history.put(currentTalk.getId(), currentTalk.getTitle());
         }
     }
     protected void streamAudio() {
@@ -232,36 +258,34 @@ landscape don't extend text to edge of screen
         talkV.setText(change);
     }
 
-    private ArrayList<Integer> getSavedHistory()
+    private void getSavedHistory()
     {
         ArrayList<Integer> intHistory = new ArrayList<>();
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+
         Set<String> savedHistory = settings.getStringSet("savedHistory", new ArraySet<>(Arrays.asList("-1")));
-        Set<String> savedHistoryTitles = settings.getStringSet("savedHistoryTitles", new ArraySet<>(Arrays.asList("-1")));
         //Log.d(TAG, "SavedHistory: " + history);
         history.clear();
-        historyTitles.clear();
-        for (String id : savedHistory) {
-            intHistory.add(Integer.parseInt(id));
+        if (!savedHistory.contains("-1")) {
+            for (String i : savedHistory) {
+                String[] text = i.split("@");
+                history.put(Integer.parseInt(text[0]), text[1]);
+            }
         }
-        for (String title : savedHistoryTitles)
-            historyTitles.add(title);
-        return intHistory;
     }
 
-    private void saveHistory(ArrayList<Integer> history) {
+    private void saveHistory(LinkedHashMap<Integer, String> history) {
         ArraySet<String> historyToSave = new ArraySet<>();
-        for (int id : history) {
-            historyToSave.add(Integer.toString(id));
-        }
-        ArraySet<String> historyTitlesToSave = new ArraySet<>();
-        for (String title : historyTitles) {
-            historyTitlesToSave.add(title);
+        if (history.size() == 0)
+            historyToSave.add("-1");
+        else {
+            for (int id : history.keySet()) {
+                historyToSave.add(Integer.toString(id) + "@" + history.get(id));
+            }
         }
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         settings.edit().putStringSet("savedHistory", historyToSave).apply();
-        settings.edit().putStringSet("savedHistoryTitles", historyTitlesToSave).apply();
     }
 
     @Override
@@ -290,8 +314,15 @@ landscape don't extend text to edge of screen
             if (itemId == R.id.action_history) {
                 Intent intent = new Intent(this, History.class);
                 Bundle extras = new Bundle();
-                extras.putStringArrayList("talksHistory", historyTitles);
+                ArrayList<String> toSendHist = new ArrayList<>();
+                if (!history.isEmpty()) {
+                    for (int i : history.keySet()) {
+                        toSendHist.add(history.get(i) + "@" + i);
+                    }
+                }
+                extras.putStringArrayList("talksHistory", toSendHist);
                 intent.putExtras(extras);
+                Log.d(TAG, "onActivityResult: id: " + history);
                 startActivityForResult(intent, 1);
             }
         }
@@ -306,37 +337,48 @@ landscape don't extend text to edge of screen
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult: Maybe Deleting Stuff");
         super.onActivityResult(requestCode, resultCode, data);
+        Bundle extras = data.getExtras();
         if(resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
+
             ArrayList<Integer> toDelete;
             if (extras != null) {
                 Log.d(TAG, "onActivityResult: Deleting Stuff");
                 toDelete = extras.getIntegerArrayList("toDelete");
-                if (toDelete.get(0) == -1) {
-                    historyTitles.clear();
+                if (toDelete.get(0).equals("-1")) {
                     history.clear();
 
                 }
                 else if (toDelete.size() > 0) {
                     for (int i : toDelete) {
+                        Log.d(TAG, "onActivityResult: title:" + history);
                         history.remove(i);
-                        historyTitles.remove(i);
+                        Log.d(TAG, "onActivityResult: title:" + history);
                     }
-                }
-                if (history.size() == 0) {
-                    history.add(-1);
-                    historyTitles.add("-1");
                 }
                 saveHistory(history);
             }
         }
+        try {
+            int idPosition = extras.getInt("id");
+            Log.d(TAG, "onActivityResult: idPosition: " + idPosition);
+            if (idPosition > 0) {
+                getTalk(idPosition);
+                //goToTalk();
+            }
+        }
+        catch (NullPointerException e) {
+            ;
+        }
     }
 
-    private void getTalk() {
+    private void getTalk(final int id) {
         class GetTalk extends AsyncTask<Void,Void,Talk> {
 
             @Override
             protected Talk doInBackground(Void... voids) {
+                if (id >= 0) {
+                    return db.talkDao().getTalkByID(id);
+                }
                 SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
                 boolean historyCheck = settings.getBoolean("history", false);
                 boolean reportCheck = settings.getBoolean("report", false);
@@ -368,7 +410,7 @@ landscape don't extend text to edge of screen
                 if(historyCheck && reportCheck) {
                     int[] historyArray = new int[history.size()];
                     int count = 0;
-                    for (int id :history)
+                    for (int id : history.keySet())
                         historyArray[count++] = id;
 
                     if (!author.equals("") && month == 0 && year == 0 && tag.equals(""))
@@ -444,7 +486,7 @@ landscape don't extend text to edge of screen
                 else if (historyCheck) {
                     int[] historyArray = new int[history.size()];
                     int count = 0;
-                    for (int id :history)
+                    for (int id : history.keySet())
                         historyArray[count++] = id;
 
                     if (!author.equals("") && month == 0 && year == 0 && tag.equals(""))
@@ -545,17 +587,24 @@ landscape don't extend text to edge of screen
         }
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.d(TAG, "onConfigurationChanged: ");
+    }
 
-    
     private void initializeDatabase(final AppDatabase database, final Context context) {
         class PopulateDbAsync extends AsyncTask<Void, Integer, Void> {
 
             private final AppDatabase mDb = database;
             private Context ct = context;
+            int orientation;
 
             @Override
             protected void onPreExecute() {
                 changeProgressVisibility(1);
+                orientation = getRequestedOrientation();
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
             }
             @Override
             protected Void doInBackground(final Void... params) {
@@ -607,6 +656,7 @@ landscape don't extend text to edge of screen
             @Override
             protected void onPostExecute(Void v) {
                 changeProgressVisibility(0);
+                setRequestedOrientation(orientation);
                 changeTalk("Done Creating Database\n\n" + getString(R.string.how_to_use));
 
             }

@@ -2,11 +2,12 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:layout_editor_absoluteY="56dp"
     android:fillViewport="true"
-    tools:context=".Settings"
-    tools:layout_editor_absoluteY="56dp">
+    tools:context=".Settings">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -34,10 +35,8 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
             android:checked="true"
             android:gravity="center"
             android:text="@string/report"
@@ -50,10 +49,8 @@
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
             android:checked="true"
             android:gravity="center"
             android:text="@string/inApp"

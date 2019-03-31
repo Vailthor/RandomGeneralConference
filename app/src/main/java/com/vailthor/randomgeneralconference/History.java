@@ -1,5 +1,7 @@
 package com.vailthor.randomgeneralconference;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,7 +23,8 @@ public class History extends AppCompatActivity {
     boolean noTalks = false;
     ArrayList<Integer> toDelete;
     ArrayList<String> talksHistory;
-    ArrayList<String> savedHistory;
+    ArrayList<String> historyTitle;
+    ArrayList<Integer> historyID;
     private static final String TAG = "History";
 
     @Override
@@ -31,33 +34,49 @@ public class History extends AppCompatActivity {
         toDelete = new ArrayList<>();
         currentPosition = -1;
         Bundle extras = getIntent().getExtras();
-         talksHistory = new ArrayList<>();
+        talksHistory = new ArrayList<>();
+        historyID = new ArrayList<>();
+        historyTitle = new ArrayList<>();
+
         if (extras != null) {
+
+
             talksHistory = extras.getStringArrayList("talksHistory");
-            savedHistory = talksHistory;
-            int negPost = talksHistory.indexOf("-1");
-            if (negPost >= 0) {
-                talksHistory.remove(negPost);
-                firstNegative = 1;
+            if (!talksHistory.isEmpty()) {
+                for (String i : talksHistory) {
+                    String[] hist = i.split("@");
+                    historyTitle.add(hist[0]);
+                    if (hist.length > 1) {
+
+                        Log.d(TAG, "onCreate: " + hist[1]);
+                        historyID.add(Integer.parseInt(hist[1]));
+                    }
+                    else
+                        historyID.add(Integer.parseInt(hist[0]));
+                }
+                talksHistory = new ArrayList<>(historyTitle);
             }
-            else
-                firstNegative = 0;
+            else {
+                talksHistory.add("(No Talks in History)");
+                noTalks = true;
+            }
+
         }
 
-        final int historySize = talksHistory.size();
+
         final ListView histList = findViewById(R.id.historyList);
         histList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,long arg3) {
                 currentPosition = position;
+                Log.d(TAG, "Position: " + position);
+                Log.d(TAG, "talkName: " + talksHistory.get(currentPosition));
+                Log.d(TAG, "indexOfGivenTalk: " + historyTitle.indexOf(talksHistory.get(currentPosition)));
+                Log.d(TAG, "TalkID: " + historyID.get(historyTitle.indexOf(talksHistory.get(currentPosition))));
                 view.setSelected(true);
             }
 
         });
-        if (historySize == 0 || (historySize == 1 && firstNegative == 1)) {
-            talksHistory.add("(No Talks in History)");
-            noTalks = true;
-        }
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_list_item_1,
@@ -67,26 +86,78 @@ public class History extends AppCompatActivity {
         histList.setAdapter(arrayAdapter);
         Button delHistory = findViewById(R.id.deleteHistory);
         Button delIndiv = findViewById(R.id.delSelected);
+        Button openIndiv = findViewById(R.id.openSelected);
 
         delHistory.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (toDelete.size() > 0)
-                    toDelete.set(0, -1);
-                else
-                    toDelete.add(-1);
-                //if (historySize > 0) {
-                    talksHistory.clear();
-                    arrayAdapter.notifyDataSetChanged();
-                //}
+                // 1. Instantiate an <code><a href="/reference/android/app/AlertDialog.Builder.html">AlertDialog.Builder</a></code> with its constructor
+                AlertDialog.Builder builder = new AlertDialog.Builder(History.this);
+
+// 2. Chain together various setter methods to set the dialog characteristics
+                builder.setMessage(R.string.delete_history_message)
+                        .setTitle(R.string.delete_history_title);
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked Yes button
+                        if (toDelete.size() > 0)
+                            toDelete.set(0, -1);
+                        else
+                            toDelete.add(-1);
+                        talksHistory.clear();
+                        arrayAdapter.notifyDataSetChanged();
+                        //}
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+
+// 3. Get the <code><a href="/reference/android/app/AlertDialog.html">AlertDialog</a></code> from <code><a href="/reference/android/app/AlertDialog.Builder.html#create()">create()</a></code>
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
             }
         });
 
         delIndiv.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (currentPosition != -1) {
-                    toDelete.add(savedHistory.indexOf(talksHistory.get(currentPosition)));
-                    talksHistory.remove(currentPosition);
-                    arrayAdapter.notifyDataSetChanged();
+                try {
+                    if (currentPosition != -1) {
+
+
+                        toDelete.add(historyID.get(historyTitle.indexOf(talksHistory.get(currentPosition))));
+                        talksHistory.remove(currentPosition);
+                        arrayAdapter.notifyDataSetChanged();
+                    }
+                }
+                catch (Exception e) {
+                    ;
+                }
+            }
+        });
+
+        openIndiv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent();
+                    Bundle extras = new Bundle();
+                    int idToOpen = historyID.get(historyTitle.indexOf(talksHistory.get(currentPosition)));
+                    extras.putInt("id", idToOpen);
+                    if (!toDelete.isEmpty() && !noTalks) {
+                        extras.putIntegerArrayList("toDelete", toDelete);
+                        intent.putExtras(extras);
+                        setResult(RESULT_OK, intent);
+                    } else {
+                        intent.putExtras(extras);
+                        setResult(RESULT_CANCELED, intent);
+                    }
+                    finish();
+                }
+                catch (Exception e) {
+                    ;
                 }
             }
         });
