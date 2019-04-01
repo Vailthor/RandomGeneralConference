@@ -1,4 +1,4 @@
-package com.vailthor.randomgeneralconference;
+package com.personal.nathan.randomgeneralconferencetalk;
 
 import android.arch.persistence.room.Room;
 import android.content.Context;
@@ -14,7 +14,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.util.ArraySet;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,12 +25,14 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.personal.nathan.randomgeneralconferencetalk.R;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -313,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
             ArrayList<Integer> toDelete;
             if (extras != null) {
                 toDelete = extras.getIntegerArrayList("toDelete");
-                if (toDelete.get(0).equals("-1")) {
+                if (toDelete.get(0).equals(-1)) {
                     history.clear();
 
                 }
@@ -572,7 +573,7 @@ public class MainActivity extends AppCompatActivity {
                 BufferedReader reader = null;
                 try {
                     InputStream is = assetManager.open("talks.csv");
-                    reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+                    reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
                     String text = null;
                     int count = 1;
                     while ((text = reader.readLine()) != null) {

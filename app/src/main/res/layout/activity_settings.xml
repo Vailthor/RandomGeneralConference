@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:layout_editor_absoluteY="56dp"
     android:fillViewport="true"
-    tools:context=".Settings">
+    tools:context="com.personal.nathan.randomgeneralconferencetalk.Settings">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

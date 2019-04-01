@@ -1,17 +1,16 @@
-package com.vailthor.randomgeneralconference;
+package com.personal.nathan.randomgeneralconferencetalk;
 
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import com.personal.nathan.randomgeneralconferencetalk.R;
 
 
 public class TalkView extends Activity {

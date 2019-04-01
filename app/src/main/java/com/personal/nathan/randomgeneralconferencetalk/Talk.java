@@ -1,4 +1,4 @@
-package com.vailthor.randomgeneralconference;
+package com.personal.nathan.randomgeneralconferencetalk;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;

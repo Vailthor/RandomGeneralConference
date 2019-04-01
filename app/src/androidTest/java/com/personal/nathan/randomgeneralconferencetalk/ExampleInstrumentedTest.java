@@ -1,4 +1,4 @@
-package com.vailthor.randomgeneralconference;
+package com.personal.nathan.randomgeneralconferencetalk;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
