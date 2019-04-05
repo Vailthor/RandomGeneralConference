@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.personal.nathan.randomgeneralconferencetalk">
 
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application

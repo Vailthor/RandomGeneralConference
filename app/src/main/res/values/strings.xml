@@ -10,8 +10,8 @@
     <string name="delHistory">Delete\nEntire\nHistory</string>
     <string name="action_history">History</string>
     <string name="delete_selected">Delete\nSelected\nTalk</string>
-    <string name="how_to_use">How to Use:\nTo Generate a Completely Random Talk leave all fields blank and click the bottom left button. To go to the selected Talk click the bottom right button. Fill in the fields to filter selectable talk.</string>
-    <string name="email">Questions, Comments, or Concerns? Please Email\nvailthor1@gmail.com</string>
+    <string name="how_to_use">How to Use:\nFor a completely random talk leave all fields blank, to filter the talk fill in the desired fields.\n To generate the talk click the bottom left button. To go to the Current Talk click the bottom right button.</string>
+    <string name="email">Questions or Problems? Please Email\nvailthor1@gmail.com</string>
     <string name="delete_history_message">Are you certain you want to delete the entire history?</string>
     <string name="delete_history_title">Delete Entire History</string>
     <string name="open_selected">Set\nSelected\nTalk</string>
