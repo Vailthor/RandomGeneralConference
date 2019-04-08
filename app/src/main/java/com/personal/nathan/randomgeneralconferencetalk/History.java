@@ -17,6 +17,9 @@ import com.personal.nathan.randomgeneralconferencetalk.R;
 
 import java.util.ArrayList;
 
+/**
+ * Class to view and delete the history. Since main and history are two different activities the information must be passed back and forth using strings.
+ */
 public class History extends AppCompatActivity {
 
     int firstNegative;
@@ -29,6 +32,9 @@ public class History extends AppCompatActivity {
     private static final String TAG = "History";
 
     @Override
+    /**
+     * Create activity by adding talks in the history to viewable list and starting listeners for the buttons.
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
@@ -62,7 +68,7 @@ public class History extends AppCompatActivity {
 
         }
 
-
+        //This allows the list to be selectable
         final ListView histList = findViewById(R.id.historyList);
         histList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -77,18 +83,18 @@ public class History extends AppCompatActivity {
                 android.R.layout.simple_list_item_1,
                 talksHistory);
 
-        //histList.removeViewAt(0);
+
         histList.setAdapter(arrayAdapter);
         Button delHistory = findViewById(R.id.deleteHistory);
         Button delIndiv = findViewById(R.id.delSelected);
         Button openIndiv = findViewById(R.id.openSelected);
 
+        //Code for Delete Entire History Button
         delHistory.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // 1. Instantiate an <code><a href="/reference/android/app/AlertDialog.Builder.html">AlertDialog.Builder</a></code> with its constructor
+                //Alert to make sure the user actually wants to delete
                 AlertDialog.Builder builder = new AlertDialog.Builder(History.this);
 
-// 2. Chain together various setter methods to set the dialog characteristics
                 builder.setMessage(R.string.delete_history_message)
                         .setTitle(R.string.delete_history_title);
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -109,13 +115,13 @@ public class History extends AppCompatActivity {
                     }
                 });
 
-// 3. Get the <code><a href="/reference/android/app/AlertDialog.html">AlertDialog</a></code> from <code><a href="/reference/android/app/AlertDialog.Builder.html#create()">create()</a></code>
                 AlertDialog dialog = builder.create();
                 dialog.show();
 
             }
         });
 
+        //Code for deleting one individual talk
         delIndiv.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
@@ -133,6 +139,7 @@ public class History extends AppCompatActivity {
             }
         });
 
+        //Code for sending the talk selected back to the main activity.
         openIndiv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -159,6 +166,9 @@ public class History extends AppCompatActivity {
     }
 
     @Override
+    /**
+     * Insure the back button in the app works the same as the android back button.
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();
@@ -168,6 +178,9 @@ public class History extends AppCompatActivity {
     }
 
     @Override
+    /**
+     * When back is pressed send the list of strings back to the main activity.
+     */
     public void onBackPressed()
     {
         Intent intent = new Intent();

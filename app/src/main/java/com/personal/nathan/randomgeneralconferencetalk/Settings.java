@@ -9,6 +9,9 @@ import android.widget.Switch;
 
 import com.personal.nathan.randomgeneralconferencetalk.R;
 
+/**
+ * Settings page that allows for the settings to be changed.
+ */
 public class Settings extends AppCompatActivity {
 
     final String PREFS_NAME = "MyPrefsFile";
@@ -20,7 +23,7 @@ public class Settings extends AppCompatActivity {
         final SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 
 
-
+        //Load the saved settings
         Switch histSwitch = findViewById(R.id.historySwitch);
         histSwitch.setChecked(settings.getBoolean("history", true));
         Switch reportSwitch = findViewById(R.id.reportsSwitch);
@@ -28,7 +31,7 @@ public class Settings extends AppCompatActivity {
         Switch readSwitch = findViewById(R.id.readInApp);
         readSwitch.setChecked(settings.getBoolean("read", true));
 
-
+        //Listeners for the different settings.
         histSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked)

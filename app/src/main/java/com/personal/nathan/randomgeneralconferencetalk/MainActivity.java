@@ -44,6 +44,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+/**
+ * Class for selecting of talks, either randomly or filtered.
+ */
 public class MainActivity extends AppCompatActivity {
 
     private AppDatabase db;
@@ -59,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
+    /**
+     * Sets up the Main Generating Activity, if the app is starting for the first time it will initialize the database.
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -68,12 +74,12 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //lists for keywords and authors (in order of occurrence)
         String authors[] = {"Gordon B. Hinckley","Thomas S. Monson","James E. Faust","Henry B. Eyring","Boyd K. Packer","L. Tom Perry","Russell M. Nelson","M. Russell Ballard","Dallin H. Oaks","Spencer W. Kimball","Dieter F. Uchtdorf","N. Eldon Tanner","Ezra Taft Benson","Marion G. Romney","David B. Haight","Richard G. Scott","Robert D. Hales","Joseph B. Wirthlin","Neal A. Maxwell","Jeffrey R. Holland","Howard W. Hunter","Marvin J. Ashton","Bruce R. McConkie","David A. Bednar","D. Todd Christofferson","Victor L. Brown","Mark E. Petersen","Neil L. Andersen","Quentin L. Cook","F. Michael Watson","LeGrand Richards","Barbara B. Smith","H. Burke Peterson","Wilford G. Edling","Marion D. Hanks","Loren C. Dunn","Vaughn J. Featherstone","A. Theodore Tuttle","Franklin D. Richards","Francis M. Gibbons","Harold B. Lee","Hartman Rector+ Jr.","Elaine S. Dalton","Paul H. Dunn","Rex D. Pinegar","Julie B. Beck","J. Thomas Fyans","Richard C. Edgley","Theodore M. Burton","H. David Burton","Robert L. Simpson","J. Richard Clarke","Ronald A. Rasband","Elaine L. Jack","Joseph Anderson","Bonnie D. Parkin","Charles A. Didier","S. Dilworth Young","Delbert L. Stapley","Dean L. Larsen","Sterling W. Sill","Keith B. McMullin","Henry D. Taylor","Bernard P. Brockbank","Carlos E. Asay","William Grant Bangerter","Adney Y. Komatsu","John H. Vandenberg","James A. Cullimore","Barbara W. Winder","Eldred G. Smith","Gary E. Stevenson","Dwan J. Young","John H. Groberg","Dale G. Renlund","Robert L. Backman","Susan W. Tanner","Joseph Fielding Smith","Ted E. Davis","Brook P. Hales","Ardeth G. Kapp","James M. Paramore","William R. Bradford","Chieko N. Okazaki","O. Leslie Stone","Gene R. Cook","Robert W. Cantwell","Mary N. Cook","Earl C. Tingey","Aileen H. Clyde","Hugh W. Pinnock","Yoshihiko Kikuchi","Glenn L. Pace","ElRay L. Christiansen","Linda K. Burton","Jacob de Jager","Margaret D. Nadauld","F. Burton Howard","Sharon G. Larsen","Silvia H. Allred","Barbara Thompson","Ronald E. Poelman","Ulisses Soares","Virginia U. Jensen","F. Enzio Busche","Anne C. Pingree","Donald L. Hallstrom","William H. Bennett","Sheri L. Dew","L. Whitney Clayton","Virginia H. Pearce","Carol B. Thomas","Kathleen H. Hughes","Robert E. Wells","Jack H. Goaslind","Ann M. Dibb","Bonnie L. Oscarson","Elaine A. Cannon","Mary Ellen Smoot","Harold G. Hillam","Carole M. Stephens","L. Aldin Porter","Ted E. Brewerton","Lynn G. Robbins","Royden G. Derrick","Michaelene P. Grassli","Claudio R. M. Costa","Richard J. Maynes","Angel Abrea","George P. Lee","W. Craig Zwick","Rosemary M. Wixom","Jay E. Jensen","David E. Sorensen","Craig C. Christensen","Kevin R. Jergensen","Steven E. Snow","Merrill J. Bateman","Derek A. Cuthbert","Dennis B. Neuenschwander","Linda S. Reeves","Walter F. González","Tad R. Callister","Gérald Caussé","Monte J. Brough","Joe J. Christensen","Carlos H. Amado","Marlin K. Jensen","Carol F. McConkie","Patricia P. Pinegar","Dean M. Davies","W. Eugene Hansen","Gerrit W. Gong","Janette Hales Beckham","Hans B. Ringger","Alexander B. Morrison","John K. Carmack","Cheryl A. Esplin","Francisco J. Viñas","Ben B. Banks","Cecil O. Samuelson Jr.","Kenneth Johnson","G. Homer Durham","Coleen K. Menlove","Spencer J. Condie","Bruce D. Porter","John B. Dickson","Joanne B. Doxey","Ruth B. Wright","Neill F. Marriott","Janette C. Hales","Wesley L. Jones","L. Lionel Kendrick","Carl B. Pratt","F. Melvin Hammond","Alvin R. Dyer","Paul B. Pieper","Lance B. Wickman","Sheldon F. Child","Cheryl C. Lant","Shayne M. Bowen","Claudio D. Zivic","Benjamín De Hoyos","David F. Evans","Milton R. Hunter","Mervyn B. Arnold","Joy F. Evans","Paul V. Johnson","Gary J. Coleman","C. Scott Grow","W. Christopher Waddell","Robert K. Dellenbach","Gayle M. Clegg","Jean A. Stevens","Jean B. Bingham","William R. Walker","Christoffel Golden Jr.","Shirley W. Thomas","Joy D. Jones","Rex C. Reeve","Devin G. Durrant","Stanley G. Ellis","Lynn A. Mickelsen","Robert C. Oaks","Jayne B. Malan","John M. Madsen","Sydney S. Reynolds","H. Bryan Richards","Lloyd P. George","Carlos A. Godoy","Gardner H. Russell","Michael John U. Teh","Anthony D. Perkins","Lawrence E. Corbridge"};
         String tags[] = {"Jesus Christ","Faith","Service","Family","Obedience","Priesthood","Love","Missionary Work","Testimony","Holy Ghost","Prayer","Spirituality","Adversity","Atonement","Repentance","Plan of Salvation","Prophets","Covenants","Morality","Example","Temples","Agency","Children","Joy","Youth","Restoration","Marriage","Book of Mormon","Women","Teaching","Conversion","Home","Scripture Study","Commandments","Parenthood","Peace","Scriptures","Joseph Smith","Welfare","Forgiveness","God the Father","Truth","Charity","Education","Preparation","Sacrifice","Gratitude","Humility","Activation","Resurrection","Honesty","Church Growth","Temple Work","Relief Society","Discipleship","Temptation","Leadership","Satan","Ordinances","Sacrament","Sin","Family History","Endurance","Media","Commitment","Church Leaders","General Conference","Blessings","Death","Motherhood","Word of Wisdom","Unity","Work","Responsibility","Hope","Tithing","Worthiness","Courage","Healing","Church Organization","Fellowshipping","Pioneers","Standards","Fatherhood","Self-Reliance","Divine Nature","Church Callings","Trust","Priorities","Individual Worth","Sabbath","Young Women","Friendship","Church History","Dedication","Financial Management","Duty","Parents","Kindness","Evil","Family Home Evening","Attitude","Patience","Fasting","Character","Prophecy","Compassion","Goals","Self-Esteem","Safety","Apostasy","Pride","Bishops","Worldliness","Music","Authority","Perspective","Respect","Accountability","Worship","Home Teaching","Communication","Abuse","Loyalty","Mercy","Reverence","Self-Control","Godhead","Councils","Opposition","Disabilities","Freedom","Criticism","Quorum of the Twelve Apostles","Generosity","Revelation","Ministering","Success","Judging","Conscience","Time Management","Miracles","Tolerance","Last Days","Fear","Couple Missionaries","Brotherhood","Kingdom of God","Church Meetings","Single Members","Premortal Existence","Talents","House of Israel","Elderly","Consecration","Neighbors","Creation","Contention","Greed","Grace","Patriarchal Blessings","Values","Temple Square","Profanity","Church Membership","Anger","Zion","Abortion","Employment","Wisdom","Listening","Visiting Teaching","Church Doctrine","Government","Divorce","Primary","Curriculum","Baptism","Social Services","Christianity","Justice","Angels","Ezra Taft Benson","Addiction","Aaronic Priesthood","Religion","Laws","Scouting","Homosexuality","Sisterhood","Mission of the Church","Loneliness","Howard W. Hunter","Gordon B. Hinckley","Pornography","Virtue","Technology","Health","Habits","First Presidency","Patriotism","Adam and Eve","Seminary","Bible","Fall","Wealth","Quorums of Seventy","Articles of Faith","U.S. Constitution","False Doctrines","Native Americans","Name of Church","Peer Pressure","Violence","Brigham Young","Poverty","Light of Christ","Priesthood Quorums","Disciplinary Councils","Discipline","Heroes","Spencer W. Kimball","Institute","Literacy","Dating","Covetousness","Religious Freedom","Melchizedek Priesthood","Military","Dispensations","Good Samaritan","Idol Worship","Offense","Womanhood","Integrity","Righteousness","Mortality","Meekness","Second Coming","Easter","Languages","Passover","Foreordination","Excellence","New Testament","Nonmembers","Gambling","Athletics","Tabernacle Choir","Sunday School","Understanding","Church Attendance","Learning","Eternal Life","Sacredness","Confidence","Heavenly Father","Promptings","Temple","Gathering"};
         authorsView = findViewById(R.id.autoAuthors);
         authorsView.setThreshold(1);
 
-        //authorsView.showDropDown();
         ArrayAdapter<String> authorsAdapt = new ArrayAdapter<>(getApplicationContext(),
                 android.R.layout.simple_list_item_1, authors);
         authorsView.setAdapter(authorsAdapt);
@@ -103,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         fabGen.setOnClickListener(generate);
         fabGo.setOnClickListener(goToTalk);
 
-
+        //if the app is running for the first time setup  the database and settings
         if (settings.getBoolean("first_time", true)) {
             Date c = Calendar.getInstance().getTime();
             SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
@@ -114,11 +120,9 @@ public class MainActivity extends AppCompatActivity {
             settings.edit().putBoolean("report", true).apply();
             settings.edit().putBoolean("read", true).apply();
             settings.edit().putBoolean("first_time", false).apply();
-            //talkV.setText("Creating Database Please Wait");
-            //checkIni(done);
         }
         else {
-            //compare currentDate to add new talks
+            //compare currentDate to add new talks - will be used as new talks need to be added
             String populationDate = settings.getString("datePopulated", "noDate");
             Date current = Calendar.getInstance().getTime();
             SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
@@ -142,13 +146,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Will get a new talk when the button is pressed
+     */
     private View.OnClickListener generate = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             getTalk(-1);
         }
     };
-
+    /**
+     * Open the current talk, identify where the talk should be opened and add it to the history.
+     */
     private View.OnClickListener goToTalk = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -179,26 +188,9 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void goToTalk() {
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        boolean readInApp = settings.getBoolean("read", false);
-        if (currentTalk != null && !readInApp) {
-            addTalkToHistory();
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentTalk.getURL()));
-            startActivity(browserIntent);
-
-
-        } else if (currentTalk != null && readInApp) {
-            addTalkToHistory();
-            Intent intent = new Intent(getApplicationContext(), TalkView.class);
-            intent.putExtra("URL", currentTalk.getURL());
-            startActivity(intent);
-        } else {
-            Toast toast = Toast.makeText(getApplicationContext(), "No Current Talk", Toast.LENGTH_SHORT);
-            toast.show();
-        }
-    }
-
+    /**
+     * Adds the talk to the history, if the history is over 201 delete the oldest talk
+     */
     private void addTalkToHistory() {
         if (history.size() >= 201) {
             history.remove(history.size()-1);
@@ -207,20 +199,20 @@ public class MainActivity extends AppCompatActivity {
             history.put(currentTalk.getId(), currentTalk.getTitle());
         }
     }
-    protected void streamAudio() {
 
-    }
-
-    public void changeTalk(Talk talk) {
+    /**
+     * Sets the given talk as the current talk, both the variable and the talk seen by the user.
+     * @param talk The new current talk
+     */
+  public void changeTalk(Talk talk) {
         if (talk != null) {
-            TextView talkV = findViewById(R.id.talkText);
             currentTalk = talk;
             String month = "October";
             if (talk.getMonth() == 4)
                 month = "April";
             String text = "Current Talk:\n" + talk.getTitle() + "\n" + talk.getAuthor() +
                     "\n" + month + " " + talk.getYear();
-            talkV.setText(text);
+            changeTalk(text);
         }
         else {
             Toast toast = Toast.makeText(getApplicationContext(), "No Talks Found", Toast.LENGTH_SHORT);
@@ -228,11 +220,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Changes the talkText view to be the 'change' text.
+     * @param change text that will be used
+     */
     public void changeTalk(String change) {
         TextView talkV = findViewById(R.id.talkText);
         talkV.setText(change);
     }
 
+    /**
+     * Gets the history that is saved in shared preferences
+     */
     private void getSavedHistory()
     {
         ArrayList<Integer> intHistory = new ArrayList<>();
@@ -248,6 +247,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Saves the history in shared preferences.
+     * @param history the history to be saved
+     */
     private void saveHistory(LinkedHashMap<Integer, String> history) {
         ArraySet<String> historyToSave = new ArraySet<>();
         if (history.size() == 0)
@@ -263,6 +266,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    /**
+     * Creates the options menu
+     */
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -270,6 +276,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    /**
+     * Opens the necessary activity when options is chosen. If the database is still populating the user will have to wait.
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle act on bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -306,6 +315,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    /**
+     * Used to delete history when the history activity completes. Also sets the current talk if chosen.
+     */
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Bundle extras = data.getExtras();
@@ -338,6 +350,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Gets a talk from the database using the parameters specified by the user. (Author, Keyword/Tag, Year, Month, History, Report/Sustaining.)
+     * @param id id of the talk if needed
+     */
     private void getTalk(final int id) {
         class GetTalk extends AsyncTask<Void,Void,Talk> {
 
@@ -537,6 +553,10 @@ public class MainActivity extends AppCompatActivity {
         gt.execute();
     }
 
+    /**
+     * Shows or hides the progress bar, only used when initializing the database.
+     * @param vis used to give visibility
+     */
     public void changeProgressVisibility(int vis) {
         ProgressBar progress = findViewById(R.id.progressBar);
         if (vis == 0) {
@@ -553,6 +573,11 @@ public class MainActivity extends AppCompatActivity {
         super.onConfigurationChanged(newConfig);
     }
 
+    /**
+     * Initialize the database with all the talks in assets/talks.csv.
+     * @param database the database that is being initialized
+     * @param context the context of the application
+     */
     private void initializeDatabase(final AppDatabase database, final Context context) {
         class PopulateDbAsync extends AsyncTask<Void, Integer, Void> {
 
@@ -630,9 +655,16 @@ public class MainActivity extends AppCompatActivity {
         sync.execute();
     }
 
+    /**
+     * To be used when new talks are to be added.
+     */
     private void populateNew() {
         //check dates and add talks as needed
     }
+
+    /**
+     * Stop the activity and save the history.
+     */
     @Override
     protected void onStop() {
         // call the superclass method first

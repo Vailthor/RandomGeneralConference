@@ -12,13 +12,18 @@ import android.webkit.WebViewClient;
 
 import com.personal.nathan.randomgeneralconferencetalk.R;
 
-
+/**
+ * Used to view the given talk in app with a WebView.
+ */
 public class TalkView extends Activity {
 
     final String TAG = "TALK_VIEW";
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
+    /**
+     * Open the talk with the given URL.
+     */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -39,6 +44,9 @@ public class TalkView extends Activity {
     }
 
     @Override
+    /**
+     * Destroy the WebView, if this is not done audio that is playing will continue.
+     */
     protected void onDestroy() {
         super.onDestroy();
         WebView talkView = findViewById(R.id.talkWindow);
