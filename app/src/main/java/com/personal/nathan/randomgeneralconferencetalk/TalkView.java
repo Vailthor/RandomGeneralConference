@@ -2,15 +2,13 @@ package com.personal.nathan.randomgeneralconferencetalk;
 
 import android.app.Activity;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.os.Bundle;
 import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
-import com.personal.nathan.randomgeneralconferencetalk.R;
 
 /**
  * Used to view the given talk in app with a WebView.

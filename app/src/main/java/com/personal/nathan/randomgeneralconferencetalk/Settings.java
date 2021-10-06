@@ -1,17 +1,12 @@
 package com.personal.nathan.randomgeneralconferencetalk;
 
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-
-import com.personal.nathan.randomgeneralconferencetalk.R;
 
 /**
  * Settings page that allows for the settings to be changed.
