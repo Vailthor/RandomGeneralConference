@@ -7,6 +7,12 @@
     <string name="report">Reports and Sustainings\n\nWhen on, Reports and Sustainings will be excluded.</string>
     <string name="history">History\n\nWhen on, talks that have been read will be excluded</string>
     <string name="inApp">Read in App\n\nWhen on, Talks will be opened in the App as opposed to Gospel Library or a Browser</string>
+    <string name="refresDB">Refresh Database</string>
+    <string name="refresDBMessage">This will force a check for any missing talks in your database (this should have occurred when you updated the app.) Would you like to proceed?</string>
+    <string name="refresDBTitle">Refresh Database</string>
+    <string name="resetDB">Reset Database</string>
+    <string name="resetDBMessage">WARNING: This will wipe and reset your talk database and history. Would you like to proceed?</string>
+    <string name="resetDBTitle">Reset Database</string>
     <string name="delHistory">Delete\nEntire\nHistory</string>
     <string name="action_history">History</string>
     <string name="delete_selected">Delete\nSelected\nTalk</string>

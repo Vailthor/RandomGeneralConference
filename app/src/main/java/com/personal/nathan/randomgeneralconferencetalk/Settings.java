@@ -1,9 +1,13 @@
 package com.personal.nathan.randomgeneralconferencetalk;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
@@ -29,7 +33,9 @@ public class Settings extends AppCompatActivity {
         Switch reportSwitch = findViewById(R.id.reportsSwitch);
         reportSwitch.setChecked(settings.getBoolean("report", true));
         Switch readSwitch = findViewById(R.id.readInApp);
-        readSwitch.setChecked(settings.getBoolean("read", true));
+        readSwitch.setChecked(settings.getBoolean("read", false));
+        Button refreshDB = findViewById(R.id.refresh);
+        Button resetDB = findViewById(R.id.reset);
 
         //Listeners for the different settings.
         histSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -54,17 +60,56 @@ public class Settings extends AppCompatActivity {
                 // true if the switch is in the On position
             }
         });
-        readSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked)
-                    settings.edit().putBoolean("read", true).apply();
-                else
-                    settings.edit().putBoolean("read", false).apply();
+        /*
+        refreshDB.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                //Alert to tell the user what refresh does
+                AlertDialog.Builder builder = new AlertDialog.Builder(Settings.this);
 
-                // do something, the isChecked will be
-                // true if the switch is in the On position
+                builder.setMessage(R.string.refresDBMessage)
+                        .setTitle(R.string.refresDBTitle);
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked Yes button
+                        settings.edit().putBoolean("first_time", true).apply();
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
             }
         });
 
+        resetDB.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                //Alert to tell the user what reset does
+                AlertDialog.Builder builder = new AlertDialog.Builder(Settings.this);
+
+                builder.setMessage(R.string.resetDBMessage)
+                        .setTitle(R.string.resetDBTitle);
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked Yes button
+
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+
+            }
+        });
+        */
     }
 }

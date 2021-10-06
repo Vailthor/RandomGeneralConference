@@ -144,12 +144,14 @@
                 android:id="@+id/monthNone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="monthChanged"
                 android:text="No Month" />
 
             <RadioButton
                 android:id="@+id/april"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="monthChanged"
                 android:text="April"
                 tools:layout_editor_absoluteX="218dp"
                 tools:layout_editor_absoluteY="202dp" />
@@ -158,6 +160,7 @@
                 android:id="@+id/radioButton2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="monthChanged"
                 android:text="October"
                 tools:layout_editor_absoluteX="218dp"
                 tools:layout_editor_absoluteY="234dp" />

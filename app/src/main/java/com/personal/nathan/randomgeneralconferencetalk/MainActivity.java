@@ -14,9 +14,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.util.ArraySet;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ProgressBar;
@@ -38,9 +40,17 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
@@ -57,7 +67,13 @@ public class MainActivity extends AppCompatActivity {
     AutoCompleteTextView authorsView;
     AutoCompleteTextView tagsView;
     private Talk currentTalk;
-    final int CURRENT_YEAR = 2018;
+    boolean justCreated = true;
+    //Needs to be updated everytime talks are added to the database
+    final int CURRENT_YEAR = 2021;
+    final String CURRENT_DATE = "30-Oct-2021";
+    final double NUM_TALKS = 3988.0;
+    // To Update
+
 
 
 
@@ -101,7 +117,19 @@ public class MainActivity extends AppCompatActivity {
         adp1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         sp1.setAdapter(adp1);
 
+        //listener for when a year is selected from the spinner, changes what authors can be seen in the list
+        sp1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (!justCreated)
+                    setSpinners();
+                else
+                    justCreated = false;
+            }
 
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                return;
+            }
+        });
 
 
         FloatingActionButton fabGo = findViewById(R.id.fabGo);
@@ -111,39 +139,55 @@ public class MainActivity extends AppCompatActivity {
 
         //if the app is running for the first time setup  the database and settings
         if (settings.getBoolean("first_time", true)) {
-            Date c = Calendar.getInstance().getTime();
             SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
-            String formattedDate = df.format(c);
-            settings.edit().putString("datePopulated", formattedDate).apply();
             initializeDatabase(db, getApplicationContext());
             settings.edit().putBoolean("history", true).apply();
             settings.edit().putBoolean("report", true).apply();
-            settings.edit().putBoolean("read", true).apply();
+            settings.edit().putBoolean("read", false).apply();
+            settings.edit().putString("datePopulated", CURRENT_DATE).apply();
             settings.edit().putBoolean("first_time", false).apply();
         }
         else {
-            //compare currentDate to add new talks - will be used as new talks need to be added
-            String populationDate = settings.getString("datePopulated", "noDate");
-            Date current = Calendar.getInstance().getTime();
+
+
+            //compare Current_Date to add new talks - will be used as new talks need to be added
+            String nonInitDate =  "11-Jan-1900";
+            String populationDate = settings.getString("datePopulated", nonInitDate);
+            Date current;
             SimpleDateFormat df = new SimpleDateFormat("dd-MMM-yyyy");
+
             Date popDate;
             try {
+                current = df.parse(CURRENT_DATE);
                 popDate = df.parse(populationDate);
-                if (popDate.before(current)) {
-                    populateNew();
+                Log.d(TAG, "onCreate: " + popDate);
+                if (populationDate == nonInitDate) {
+                    initializeDatabase(db, getApplicationContext());
+                    settings.edit().putString("datePopulated", df.format(CURRENT_DATE)).apply();
                 }
+                if (popDate.before(current)) {
+                    Log.d(TAG, "onCreate: Adding New Talks");
+                    populateNew(db, getApplicationContext());
+                }
+                else
+                    setSpinners();
             }
             catch (ParseException e) {
                 e.printStackTrace();
             }
 
             getSavedHistory();
-
-
+            //Log.d(TAG, "onCreate: Read - " + db.getOpenHelper().getReadableDatabase().getVersion());
+            //db.getOpenHelper().getReadableDatabase().needUpgrade()
+            //Log.d(TAG, "onCreate: Write -" + db.getOpenHelper().getWritableDatabase().getVersion());
 
 
         }
 
+    }
+
+    public void monthChanged(View view) {
+        setSpinners();
     }
 
     /**
@@ -163,20 +207,22 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             ProgressBar progress = findViewById(R.id.progressBar);
             if (progress.getVisibility() != View.VISIBLE) {
-                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-                boolean readInApp = settings.getBoolean("read", false);
-                if (currentTalk != null && !readInApp) {
+                //SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                //boolean readInApp = settings.getBoolean("read", false);
+                if (currentTalk != null) {
                     addTalkToHistory();
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(currentTalk.getURL()));
                     startActivity(browserIntent);
 
 
-                } else if (currentTalk != null && readInApp) {
-                    addTalkToHistory();
-                    Intent intent = new Intent(v.getContext(), TalkView.class);
-                    intent.putExtra("URL", currentTalk.getURL());
-                    startActivity(intent);
-                } else {
+                }
+//                else if (currentTalk != null && readInApp) {
+//                    addTalkToHistory();
+//                    Intent intent = new Intent(v.getContext(), TalkView.class);
+//                    intent.putExtra("URL", currentTalk.getURL());
+//                    startActivity(intent);
+//                }
+                else {
                     Toast toast = Toast.makeText(getApplicationContext(), "No Current Talk", Toast.LENGTH_SHORT);
                     toast.show();
                 }
@@ -562,6 +608,10 @@ public class MainActivity extends AppCompatActivity {
         if (vis == 0) {
             progress.setVisibility(View.INVISIBLE);
         }
+        else if (vis == 2) {
+            progress.setVisibility(View.VISIBLE);
+            changeTalk("Database Updating");
+        }
         else {
             progress.setVisibility(View.VISIBLE);
             changeTalk("Database Populating");
@@ -584,6 +634,7 @@ public class MainActivity extends AppCompatActivity {
             private final AppDatabase mDb = database;
             private Context ct = context;
             int orientation;
+            String[] tArr;
 
             @Override
             protected void onPreExecute() {
@@ -599,14 +650,16 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     InputStream is = assetManager.open("talks.csv");
                     reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                    reader.readLine();
                     String text = null;
                     int count = 1;
                     while ((text = reader.readLine()) != null) {
                         publishProgress(count);
                         count++;
-                        String[] tArr = text.split(",");
+                        tArr = text.split(",");
                         tArr[0] = tArr[0].replace('+', ',');
                         tArr[1] = tArr[1].replace('+', ',');
+                        //Log.d(TAG, "doInBackground: " + Arrays.toString(tArr));
                         boolean report = false;
                         if (tArr[4].equals("T")) {
                             report = true;
@@ -637,6 +690,8 @@ public class MainActivity extends AppCompatActivity {
             protected void onPostExecute(Void v) {
                 changeProgressVisibility(0);
                 setRequestedOrientation(orientation);
+                setSpinners();
+
                 changeTalk("Done Creating Database\n\n" + getString(R.string.how_to_use));
 
             }
@@ -655,11 +710,222 @@ public class MainActivity extends AppCompatActivity {
         sync.execute();
     }
 
+    public void changeSpinners(String[] authors, String[] tags) {
+        authorsView = findViewById(R.id.autoAuthors);
+        authorsView.setThreshold(1);
+
+        ArrayAdapter<String> authorsAdapt = new ArrayAdapter<>(getApplicationContext(),
+                android.R.layout.simple_list_item_1, authors);
+        authorsView.setAdapter(authorsAdapt);
+        tagsView = findViewById(R.id.autoTags);
+        tagsView.setThreshold(1);
+        ArrayAdapter<String> tagsAdapt = new ArrayAdapter<>(getApplicationContext(),
+                android.R.layout.simple_list_item_1, tags);
+        tagsView.setAdapter(tagsAdapt);
+    }
+
+    private void setSpinners() {
+        class SetAuthorandTags extends AsyncTask<Void,Void,List<String[]>> {
+            protected List<String[]> doInBackground(Void... voids) {
+                Spinner yearSpinner = findViewById(R.id.yearSpin);
+                RadioGroup monthGroup = findViewById(R.id.monthGroup);
+                String yearString = yearSpinner.getSelectedItem().toString();
+                int monthButton = monthGroup.getCheckedRadioButtonId();
+                String monthText = ((RadioButton)findViewById(monthButton)).getText().toString();
+                int month = 0;
+                if (monthText.equals("April"))
+                    month = 4;
+                else if(monthText.equals("October"))
+                    month = 10;
+                int year = 0;
+                if (!yearString.equals("None"))
+                    year = Integer.parseInt(yearString);
+
+                List<String> tagList;
+                List<String> authorsList;
+                if (year != 0 && month == 0) {
+                    tagList = db.talkDao().getTagsYear(year);
+                    authorsList = db.talkDao().getAuthorsYear(year);
+                }
+                else if (year == 0 && month != 0) {
+                    tagList = db.talkDao().getTagsMonth(month);
+                    authorsList = db.talkDao().getAuthorsMonth(month);
+                }
+                else if (year != 0 && month != 0) {
+                    tagList = db.talkDao().getTagsYearMonth(year,month);
+                    authorsList = db.talkDao().getAuthorsYearMonth(year, month);
+                }
+                else {
+                    tagList = db.talkDao().getTags();
+                    authorsList = db.talkDao().getAuthors();
+                }
+
+                Map<String, Integer> orderedTagList = new HashMap<>();
+                Map<String, Integer> orderedAuthorList = new HashMap<>();
+
+                for (String tagArray : tagList) {
+                    List<String> tempTags = Arrays.asList(tagArray.split("\\+"));
+                    for (String tag : tempTags) {
+                        tag = tag.replace("[","");
+                        tag = tag.replace("]","");
+                        tag = tag.replace("\"","");
+                        if (orderedTagList.containsKey(tag))
+                            orderedTagList.put(tag,orderedTagList.get(tag) + 1);
+                        else
+                            orderedTagList.put (tag,1);
+                    }
+                }
+
+                for (String author : authorsList) {
+                    if (orderedAuthorList.containsKey(author))
+                        orderedAuthorList.put(author,orderedAuthorList.get(author) + 1);
+                    else
+                        orderedAuthorList.put (author,1);
+                }
+
+                orderedTagList.keySet().remove("");
+                orderedTagList = sortByComparator(orderedTagList, false);
+
+                orderedAuthorList.keySet().remove("");
+                orderedAuthorList = sortByComparator(orderedAuthorList, false);
+
+                String[] authors = orderedAuthorList.keySet().toArray(new String[orderedAuthorList.keySet().size()]);
+                String[] tags = orderedTagList.keySet().toArray(new String[orderedTagList.keySet().size()]);
+
+                List<String[]> valuesToPass = new ArrayList<String[]>();
+                valuesToPass.add(authors);
+                valuesToPass.add(tags);
+                return valuesToPass;
+            }
+            @Override
+            protected void onPostExecute(List<String[]> passedValues) {
+                String[] authors = passedValues.get(0);
+                String[] tags = passedValues.get(1);
+                changeSpinners(authors,tags);
+            }
+        }
+        SetAuthorandTags setAT = new SetAuthorandTags();
+        setAT.execute();
+    }
+
+    private static Map<String, Integer> sortByComparator(Map<String, Integer> unsortMap, final boolean order) {
+
+        List<Map.Entry<String, Integer>> list = new LinkedList<Entry<String, Integer>>(unsortMap.entrySet());
+
+        // Sorting the list based on values
+        Collections.sort(list, new Comparator<Entry<String, Integer>>() {
+            public int compare(Entry<String, Integer> o1,
+                               Entry<String, Integer> o2) {
+                if (order) {
+                    return o1.getValue().compareTo(o2.getValue());
+                } else {
+                    return o2.getValue().compareTo(o1.getValue());
+
+                }
+            }
+        });
+
+        // Maintaining insertion order with the help of LinkedList
+        Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
+        for (Entry<String, Integer> entry : list) {
+            sortedMap.put(entry.getKey(), entry.getValue());
+        }
+
+        return sortedMap;
+    }
+
     /**
      * To be used when new talks are to be added.
      */
-    private void populateNew() {
-        //check dates and add talks as needed
+    private void populateNew(final AppDatabase database, final Context context) {
+        class UpdateDbAsync extends AsyncTask<Void, Integer, Void> {
+
+            private final AppDatabase mDb = database;
+            private Context ct = context;
+            int orientation;
+            String[] tArr;
+            double numTalks = 1000;
+
+            @Override
+            protected void onPreExecute() {
+                changeProgressVisibility(2);
+                orientation = getRequestedOrientation();
+                setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
+            }
+            @Override
+            protected Void doInBackground(final Void... params) {
+                //read from csv file
+                AssetManager assetManager = ct.getAssets();
+                BufferedReader reader = null;
+                try {
+                    InputStream is = assetManager.open("talks.csv");
+                    reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+                    reader.readLine();
+                    String text = null;
+                    int count = 1;
+                    int talksAdded = 0;
+                    while ((text = reader.readLine()) != null) {
+                        publishProgress(count);
+                        count++;
+                        tArr = text.split(",");
+                        tArr[0] = tArr[0].replace('+', ',');
+                        //if talk exists in the database end this iteration
+                        boolean talkExist = db.talkDao().checkTalkExists(tArr[0]);
+                        if (!talkExist) {
+                            Log.d(TAG, "doInBackground: " + talkExist);
+                            tArr[1] = tArr[1].replace('+', ',');
+                            //Log.d(TAG, "doInBackground: " + Arrays.toString(tArr));
+                            boolean report = false;
+                            if (tArr[4].equals("T")) {
+                                report = true;
+                            }
+                            Talk t = new Talk(tArr[0], tArr[1], Integer.parseInt(tArr[2]), Integer.parseInt(tArr[3]), report, tArr[5], tArr[6]);
+                            mDb.talkDao().insert(t);
+                            talksAdded++;
+                        }
+
+                    }
+                    numTalks = count;
+                    Log.d(TAG, "doInBackground: New Talks Added - " + talksAdded);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        if (reader != null) {
+                            reader.close();
+                        }
+                    } catch (IOException e) {
+                    }
+
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void v) {
+                changeProgressVisibility(0);
+                setRequestedOrientation(orientation);
+                setSpinners();
+                SharedPreferences settings = ct.getSharedPreferences(PREFS_NAME, 0);
+                settings.edit().putString("datePopulated", CURRENT_DATE).apply();
+                changeTalk("Done Updating Database\n\n" + getString(R.string.how_to_use));
+
+            }
+
+            @Override
+            protected void onProgressUpdate(Integer... count) {
+                ProgressBar progress = findViewById(R.id.progressBar);
+                int percent = (int)((count[0] / NUM_TALKS) * 100.0);
+
+                progress.setProgress(percent);
+
+            }
+
+        }
+        UpdateDbAsync sync = new UpdateDbAsync();
+        sync.execute();
     }
 
     /**

@@ -6,6 +6,9 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Dao
 public interface TalkDao {
     //No checks
@@ -207,8 +210,32 @@ public interface TalkDao {
     @Query("select * from talk where tags like :tag and report = :report and id not in (:history) ORDER BY RANDOM() LIMIT 1")
     Talk getTalkByTag(String tag, Boolean report, int[] history);
 
-    @Query("select * from talk where title like '%'+:title+'%'")
-    Talk getTalkByTitle(String title);
+    @Query("select exists(select 1 from talk where title = :title)")
+    boolean checkTalkExists(String title);
+
+    @Query("select author from talk")
+    List<String> getAuthors();
+
+    @Query("select author from talk where year = :year")
+    List<String> getAuthorsYear(int year);
+
+    @Query("select author from talk where month = :month")
+    List<String> getAuthorsMonth(int month);
+
+    @Query("select author from talk where year = :year and month = :month")
+    List<String> getAuthorsYearMonth(int year, int month);
+
+    @Query("select tags from talk")
+    List<String> getTags();
+
+    @Query("select tags from talk where year = :year")
+    List<String> getTagsYear(int year);
+
+    @Query("select tags from talk where month = :month")
+    List<String> getTagsMonth(int month);
+
+    @Query("select tags from talk where year = :year and month = :month")
+    List<String> getTagsYearMonth(int year, int month);
 
     @Query("DELETE FROM Talk")
     public void nukeTable();
@@ -221,5 +248,8 @@ public interface TalkDao {
 
     @Update
     void update(Talk talk);
+
+    //@Query("update talk set URL = url where title like '%'+:title+'%'")
+    //Talk updateTalkURL(String title,String url);
 
 }
