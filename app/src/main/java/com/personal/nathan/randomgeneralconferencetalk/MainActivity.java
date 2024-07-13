@@ -64,9 +64,9 @@ public class MainActivity extends AppCompatActivity {
     private Talk currentTalk;
     boolean justCreated = true;
     //Needs to be updated everytime talks are added to the database
-    final int CURRENT_YEAR = 2021;
-    final String CURRENT_DATE = "30-Oct-2021";
-    final double NUM_TALKS = 3988.0;
+    final int CURRENT_YEAR = 2024;
+    final String CURRENT_DATE = "13-Apr-2024";
+    final double NUM_TALKS = 4164.0;
     // To Update
 
 
@@ -155,7 +155,9 @@ public class MainActivity extends AppCompatActivity {
             try {
                 current = df.parse(CURRENT_DATE);
                 popDate = df.parse(populationDate);
-                Log.d(TAG, "onCreate: " + popDate);
+                Log.d(TAG, "onCreate: CD, " + current);
+                Log.d(TAG, "onCreate: PD, " + popDate);
+                Log.d(TAG, "onCreate: nID: " + nonInitDate);
                 if (populationDate == nonInitDate) {
                     initializeDatabase(db, getApplicationContext());
                     settings.edit().putString("datePopulated", df.format(CURRENT_DATE)).apply();
